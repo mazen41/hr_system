@@ -1,0 +1,16 @@
+RewriteEngine On
+RewriteBase /HR/api/
+
+# Handle preflight OPTIONS requests
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteRule ^(.*)$ v1/index.php [L,QSA]
+
+# Route all API requests to v1/index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^v1/(.*)$ v1/index.php?route=$1 [L,QSA]
+
+# Deny access to PHP files directly (except index.php)
+RewriteCond %{REQUEST_URI} \.php$
+RewriteCond %{REQUEST_URI} !index\.php$
+RewriteRule ^ - [F]

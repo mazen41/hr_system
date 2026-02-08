@@ -1,0 +1,35 @@
+# OS files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Dependencies
+node_modules/
+vendor/
+
+# Rate limiter temp files
+shared/rate_limits/
+
+# Uploads (keep structure, ignore content)
+uploads/leaves/*
+uploads/advances/*
+uploads/orders/*
+uploads/resignations/*
+uploads/photos/*
+!uploads/**/.gitkeep
+!uploads/.htaccess
+
+# Logs
+*.log
+
+# Zip archives
+*.zip
+
+# Environment
+.env
