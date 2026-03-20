@@ -1,0 +1,784 @@
+/* Vision HR - Tailwind Design System
+   Modern component classes built on Tailwind utilities
+   Compatible with existing Bootstrap/AdminLTE layout
+*/
+
+/* ============================================
+   1. CSS VARIABLES (Brand Tokens)
+   ============================================ */
+:root {
+  /* Brand Colors */
+  --vhr-brand: #0d21a5;
+  --vhr-brand-light: #3d4fb8;
+  --vhr-brand-lighter: #6d7dcb;
+  --vhr-accent: #3b82f6;
+  --vhr-success: #10b981;
+  --vhr-warning: #f59e0b;
+  --vhr-danger: #ef4444;
+  --vhr-info: #06b6d4;
+  
+  /* Neutrals */
+  --vhr-gray-50: #f9fafb;
+  --vhr-gray-100: #f3f4f6;
+  --vhr-gray-200: #e5e7eb;
+  --vhr-gray-300: #d1d5db;
+  --vhr-gray-400: #9ca3af;
+  --vhr-gray-500: #6b7280;
+  --vhr-gray-600: #4b5563;
+  --vhr-gray-700: #374151;
+  --vhr-gray-800: #1f2937;
+  --vhr-gray-900: #111827;
+  
+  /* Typography */
+  --vhr-font-ar: 'Cairo', 'Tajawal', sans-serif;
+  --vhr-font-en: 'Inter', sans-serif;
+  
+  /* Spacing Scale */
+  --vhr-space-1: 0.25rem;
+  --vhr-space-2: 0.5rem;
+  --vhr-space-3: 0.75rem;
+  --vhr-space-4: 1rem;
+  --vhr-space-5: 1.25rem;
+  --vhr-space-6: 1.5rem;
+  --vhr-space-8: 2rem;
+  --vhr-space-10: 2.5rem;
+  --vhr-space-12: 3rem;
+  
+  /* Border Radius */
+  --vhr-radius-sm: 0.375rem;
+  --vhr-radius-md: 0.5rem;
+  --vhr-radius-lg: 0.75rem;
+  --vhr-radius-xl: 1rem;
+  --vhr-radius-2xl: 1.5rem;
+  --vhr-radius-full: 9999px;
+  
+  /* Shadows */
+  --vhr-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --vhr-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --vhr-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --vhr-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --vhr-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  
+  /* Transitions */
+  --vhr-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --vhr-transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --vhr-transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================
+   2. BASE TYPOGRAPHY
+   ============================================ */
+.vhr-text-xs { font-size: 0.75rem; line-height: 1rem; }
+.vhr-text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+.vhr-text-base { font-size: 1rem; line-height: 1.5rem; }
+.vhr-text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+.vhr-text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+.vhr-text-2xl { font-size: 1.5rem; line-height: 2rem; }
+.vhr-text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+.vhr-text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+
+.vhr-font-normal { font-weight: 400; }
+.vhr-font-medium { font-weight: 500; }
+.vhr-font-semibold { font-weight: 600; }
+.vhr-font-bold { font-weight: 700; }
+.vhr-font-extrabold { font-weight: 800; }
+
+/* ============================================
+   3. MODERN CARDS
+   ============================================ */
+.vhr-card {
+  background: white;
+  border-radius: var(--vhr-radius-xl);
+  box-shadow: var(--vhr-shadow);
+  overflow: hidden;
+  transition: box-shadow var(--vhr-transition), transform var(--vhr-transition);
+}
+
+.vhr-card:hover {
+  box-shadow: var(--vhr-shadow-md);
+}
+
+.vhr-card-header {
+  padding: var(--vhr-space-4) var(--vhr-space-5);
+  border-bottom: 1px solid var(--vhr-gray-100);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.vhr-card-body {
+  padding: var(--vhr-space-5);
+}
+
+.vhr-card-footer {
+  padding: var(--vhr-space-4) var(--vhr-space-5);
+  border-top: 1px solid var(--vhr-gray-100);
+  background: var(--vhr-gray-50);
+}
+
+/* Stat Cards */
+.vhr-stat-card {
+  background: white;
+  border-radius: var(--vhr-radius-xl);
+  padding: var(--vhr-space-5);
+  box-shadow: var(--vhr-shadow);
+  display: flex;
+  align-items: center;
+  gap: var(--vhr-space-4);
+  transition: all var(--vhr-transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.vhr-stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, var(--card-accent, var(--vhr-brand)) 0%, transparent 100%);
+  opacity: 0;
+  transition: opacity var(--vhr-transition);
+}
+
+.vhr-stat-card:hover::before {
+  opacity: 1;
+}
+
+.vhr-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--vhr-shadow-lg);
+}
+
+.vhr-stat-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--vhr-radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.vhr-stat-icon.brand { background: rgba(13, 33, 165, 0.1); color: var(--vhr-brand); }
+.vhr-stat-icon.success { background: rgba(16, 185, 129, 0.1); color: var(--vhr-success); }
+.vhr-stat-icon.warning { background: rgba(245, 158, 11, 0.1); color: var(--vhr-warning); }
+.vhr-stat-icon.danger { background: rgba(239, 68, 68, 0.1); color: var(--vhr-danger); }
+.vhr-stat-icon.info { background: rgba(6, 182, 212, 0.1); color: var(--vhr-info); }
+
+.vhr-stat-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.vhr-stat-value {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--vhr-gray-900);
+  line-height: 1.2;
+}
+
+.vhr-stat-label {
+  font-size: 0.875rem;
+  color: var(--vhr-gray-500);
+  margin-top: var(--vhr-space-1);
+}
+
+.vhr-stat-trend {
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--vhr-radius-full);
+  margin-top: var(--vhr-space-2);
+}
+
+.vhr-stat-trend.up { background: rgba(16, 185, 129, 0.1); color: var(--vhr-success); }
+.vhr-stat-trend.down { background: rgba(239, 68, 68, 0.1); color: var(--vhr-danger); }
+
+/* ============================================
+   4. BUTTONS
+   ============================================ */
+.vhr-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  border-radius: var(--vhr-radius-lg);
+  border: none;
+  cursor: pointer;
+  transition: all var(--vhr-transition);
+  text-decoration: none;
+  white-space: nowrap;
+  min-height: 44px;
+}
+
+.vhr-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+.vhr-btn:disabled, .vhr-btn.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Primary */
+.vhr-btn-primary {
+  background: var(--vhr-brand);
+  color: white;
+}
+.vhr-btn-primary:hover {
+  background: var(--vhr-brand-light);
+  transform: translateY(-1px);
+  box-shadow: var(--vhr-shadow-md);
+}
+
+/* Secondary */
+.vhr-btn-secondary {
+  background: var(--vhr-gray-100);
+  color: var(--vhr-gray-700);
+}
+.vhr-btn-secondary:hover {
+  background: var(--vhr-gray-200);
+}
+
+/* Success */
+.vhr-btn-success {
+  background: var(--vhr-success);
+  color: white;
+}
+.vhr-btn-success:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+/* Danger */
+.vhr-btn-danger {
+  background: var(--vhr-danger);
+  color: white;
+}
+.vhr-btn-danger:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+/* Ghost */
+.vhr-btn-ghost {
+  background: transparent;
+  color: var(--vhr-gray-600);
+}
+.vhr-btn-ghost:hover {
+  background: var(--vhr-gray-100);
+}
+
+/* Sizes */
+.vhr-btn-sm {
+  padding: 0.375rem 0.875rem;
+  font-size: 0.8125rem;
+  min-height: 36px;
+}
+
+.vhr-btn-lg {
+  padding: 0.875rem 1.75rem;
+  font-size: 1.0625rem;
+  min-height: 52px;
+}
+
+/* Icon Button */
+.vhr-btn-icon {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: var(--vhr-radius-lg);
+}
+
+.vhr-btn-icon.sm {
+  width: 36px;
+  height: 36px;
+}
+
+/* ============================================
+   5. FORM INPUTS
+   ============================================ */
+.vhr-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 2px solid var(--vhr-gray-200);
+  border-radius: var(--vhr-radius-lg);
+  background: white;
+  transition: all var(--vhr-transition);
+  min-height: 48px;
+}
+
+.vhr-input:focus {
+  outline: none;
+  border-color: var(--vhr-accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.vhr-input:disabled {
+  background: var(--vhr-gray-100);
+  cursor: not-allowed;
+}
+
+.vhr-input.error {
+  border-color: var(--vhr-danger);
+}
+
+.vhr-input.error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+.vhr-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--vhr-gray-700);
+  margin-bottom: 0.5rem;
+}
+
+.vhr-label.required::after {
+  content: ' *';
+  color: var(--vhr-danger);
+}
+
+.vhr-input-error {
+  font-size: 0.8125rem;
+  color: var(--vhr-danger);
+  margin-top: 0.375rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.vhr-input-group {
+  margin-bottom: var(--vhr-space-4);
+}
+
+/* Select */
+.vhr-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left 0.75rem center;
+  background-size: 1.25rem;
+  padding-left: 2.5rem;
+}
+
+[dir="ltr"] .vhr-select {
+  background-position: right 0.75rem center;
+  padding-left: 1rem;
+  padding-right: 2.5rem;
+}
+
+/* ============================================
+   6. BADGES
+   ============================================ */
+.vhr-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: var(--vhr-radius-full);
+  white-space: nowrap;
+}
+
+.vhr-badge-brand { background: rgba(13, 33, 165, 0.1); color: var(--vhr-brand); }
+.vhr-badge-success { background: rgba(16, 185, 129, 0.1); color: var(--vhr-success); }
+.vhr-badge-warning { background: rgba(245, 158, 11, 0.1); color: #b45309; }
+.vhr-badge-danger { background: rgba(239, 68, 68, 0.1); color: var(--vhr-danger); }
+.vhr-badge-info { background: rgba(6, 182, 212, 0.1); color: #0891b2; }
+.vhr-badge-gray { background: var(--vhr-gray-100); color: var(--vhr-gray-600); }
+
+/* Solid variants */
+.vhr-badge-solid-brand { background: var(--vhr-brand); color: white; }
+.vhr-badge-solid-success { background: var(--vhr-success); color: white; }
+.vhr-badge-solid-warning { background: var(--vhr-warning); color: white; }
+.vhr-badge-solid-danger { background: var(--vhr-danger); color: white; }
+
+/* ============================================
+   7. ALERTS
+   ============================================ */
+.vhr-alert {
+  padding: var(--vhr-space-4);
+  border-radius: var(--vhr-radius-lg);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--vhr-space-3);
+}
+
+.vhr-alert-icon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+}
+
+.vhr-alert-content {
+  flex: 1;
+}
+
+.vhr-alert-title {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.vhr-alert-success { background: rgba(16, 185, 129, 0.1); border-right: 4px solid var(--vhr-success); }
+.vhr-alert-warning { background: rgba(245, 158, 11, 0.1); border-right: 4px solid var(--vhr-warning); }
+.vhr-alert-danger { background: rgba(239, 68, 68, 0.1); border-right: 4px solid var(--vhr-danger); }
+.vhr-alert-info { background: rgba(6, 182, 212, 0.1); border-right: 4px solid var(--vhr-info); }
+
+[dir="ltr"] .vhr-alert-success,
+[dir="ltr"] .vhr-alert-warning,
+[dir="ltr"] .vhr-alert-danger,
+[dir="ltr"] .vhr-alert-info {
+  border-right: none;
+  border-left: 4px solid;
+}
+
+/* ============================================
+   8. SKELETON LOADERS
+   ============================================ */
+.vhr-skeleton {
+  background: linear-gradient(90deg, var(--vhr-gray-200) 25%, var(--vhr-gray-100) 50%, var(--vhr-gray-200) 75%);
+  background-size: 200% 100%;
+  animation: vhr-skeleton-pulse 1.5s ease-in-out infinite;
+  border-radius: var(--vhr-radius-md);
+}
+
+@keyframes vhr-skeleton-pulse {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.vhr-skeleton-text {
+  height: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.vhr-skeleton-text.lg { height: 1.5rem; }
+.vhr-skeleton-text.sm { height: 0.75rem; }
+
+.vhr-skeleton-circle {
+  border-radius: 50%;
+}
+
+.vhr-skeleton-card {
+  height: 120px;
+}
+
+/* ============================================
+   9. RESPONSIVE GRID
+   ============================================ */
+.vhr-grid {
+  display: grid;
+  gap: var(--vhr-space-4);
+}
+
+.vhr-grid-1 { grid-template-columns: repeat(1, 1fr); }
+.vhr-grid-2 { grid-template-columns: repeat(2, 1fr); }
+.vhr-grid-3 { grid-template-columns: repeat(3, 1fr); }
+.vhr-grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+@media (max-width: 1199.98px) {
+  .vhr-grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 767.98px) {
+  .vhr-grid-2, .vhr-grid-3, .vhr-grid-4 { grid-template-columns: 1fr; }
+}
+
+/* ============================================
+   10. UTILITIES
+   ============================================ */
+.vhr-flex { display: flex; }
+.vhr-flex-col { flex-direction: column; }
+.vhr-items-center { align-items: center; }
+.vhr-justify-between { justify-content: space-between; }
+.vhr-justify-center { justify-content: center; }
+.vhr-gap-2 { gap: 0.5rem; }
+.vhr-gap-3 { gap: 0.75rem; }
+.vhr-gap-4 { gap: 1rem; }
+
+.vhr-p-4 { padding: 1rem; }
+.vhr-p-5 { padding: 1.25rem; }
+.vhr-p-6 { padding: 1.5rem; }
+.vhr-px-4 { padding-left: 1rem; padding-right: 1rem; }
+.vhr-py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+
+.vhr-m-0 { margin: 0; }
+.vhr-mb-2 { margin-bottom: 0.5rem; }
+.vhr-mb-4 { margin-bottom: 1rem; }
+.vhr-mb-6 { margin-bottom: 1.5rem; }
+.vhr-mt-4 { margin-top: 1rem; }
+
+.vhr-rounded { border-radius: var(--vhr-radius-md); }
+.vhr-rounded-lg { border-radius: var(--vhr-radius-lg); }
+.vhr-rounded-xl { border-radius: var(--vhr-radius-xl); }
+.vhr-rounded-full { border-radius: var(--vhr-radius-full); }
+
+.vhr-shadow { box-shadow: var(--vhr-shadow); }
+.vhr-shadow-md { box-shadow: var(--vhr-shadow-md); }
+.vhr-shadow-lg { box-shadow: var(--vhr-shadow-lg); }
+
+.vhr-bg-white { background: white; }
+.vhr-bg-gray-50 { background: var(--vhr-gray-50); }
+.vhr-bg-gray-100 { background: var(--vhr-gray-100); }
+
+.vhr-text-brand { color: var(--vhr-brand); }
+.vhr-text-success { color: var(--vhr-success); }
+.vhr-text-warning { color: var(--vhr-warning); }
+.vhr-text-danger { color: var(--vhr-danger); }
+.vhr-text-gray-500 { color: var(--vhr-gray-500); }
+.vhr-text-gray-700 { color: var(--vhr-gray-700); }
+.vhr-text-gray-900 { color: var(--vhr-gray-900); }
+
+.vhr-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vhr-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+/* ============================================
+   11. TRANSITIONS & ANIMATIONS
+   ============================================ */
+.vhr-transition {
+  transition: all var(--vhr-transition);
+}
+
+.vhr-hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+.vhr-hover-scale:hover {
+  transform: scale(1.02);
+}
+
+/* Fade in animation */
+.vhr-fade-in {
+  animation: vhr-fade-in 0.3s ease-out;
+}
+
+@keyframes vhr-fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Slide in from right (for RTL) */
+.vhr-slide-in {
+  animation: vhr-slide-in 0.3s ease-out;
+}
+
+@keyframes vhr-slide-in {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+[dir="ltr"] .vhr-slide-in {
+  animation-name: vhr-slide-in-ltr;
+}
+
+@keyframes vhr-slide-in-ltr {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* ============================================
+   12. LOADING STATES
+   ============================================ */
+.vhr-loading {
+  position: relative;
+  pointer-events: none;
+}
+
+.vhr-loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid var(--vhr-gray-300);
+  border-top-color: var(--vhr-brand);
+  border-radius: 50%;
+  animation: vhr-spin 0.6s linear infinite;
+}
+
+@keyframes vhr-spin {
+  to { transform: rotate(360deg); }
+}
+
+.vhr-btn.vhr-loading {
+  color: transparent;
+}
+
+.vhr-btn.vhr-loading::after {
+  border-color: rgba(255,255,255,0.3);
+  border-top-color: white;
+}
+
+/* Ripple Effect */
+.vhr-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.vhr-ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(0);
+  animation: vhr-ripple-anim 0.6s linear;
+  pointer-events: none;
+}
+
+@keyframes vhr-ripple-anim {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* ============================================
+   13. EMPTY STATES
+   ============================================ */
+.vhr-empty-state {
+  text-align: center;
+  padding: var(--vhr-space-10) var(--vhr-space-4);
+}
+
+.vhr-empty-state-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto var(--vhr-space-4);
+  color: var(--vhr-gray-300);
+}
+
+.vhr-empty-state-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--vhr-gray-700);
+  margin-bottom: var(--vhr-space-2);
+}
+
+.vhr-empty-state-text {
+  color: var(--vhr-gray-500);
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+/* ============================================
+   14. DASHBOARD SPECIFIC
+   ============================================ */
+.vhr-dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--vhr-space-4);
+  margin-bottom: var(--vhr-space-6);
+}
+
+.vhr-dashboard-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--vhr-gray-900);
+}
+
+.vhr-dashboard-date {
+  font-size: 0.875rem;
+  color: var(--vhr-gray-500);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.vhr-section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--vhr-gray-800);
+  margin-bottom: var(--vhr-space-4);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Quick Actions */
+.vhr-quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vhr-space-2);
+}
+
+.vhr-quick-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: white;
+  border: 1px solid var(--vhr-gray-200);
+  border-radius: var(--vhr-radius-full);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--vhr-gray-700);
+  cursor: pointer;
+  transition: all var(--vhr-transition);
+}
+
+.vhr-quick-action:hover {
+  background: var(--vhr-gray-50);
+  border-color: var(--vhr-brand);
+  color: var(--vhr-brand);
+}
+
+/* Notification Badge */
+.vhr-notification-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  background: var(--vhr-danger);
+  color: white;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  border-radius: var(--vhr-radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: vhr-pulse 2s infinite;
+}
+
+@keyframes vhr-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+[dir="ltr"] .vhr-notification-badge {
+  right: auto;
+  left: -4px;
+}
