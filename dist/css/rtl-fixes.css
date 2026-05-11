@@ -1,0 +1,401 @@
+/**
+ * Vision HR - RTL/LTR Layout Fixes
+ * Comprehensive fixes for Arabic RTL layout
+ */
+
+/* ============================================
+   BASE RTL SETUP
+   ============================================ */
+html[dir="rtl"],
+body[dir="rtl"] {
+    direction: rtl;
+    text-align: right;
+}
+
+/* ============================================
+   SIDEBAR RTL FIXES
+   ============================================ */
+[dir="rtl"] .main-sidebar {
+    right: 0;
+    left: auto;
+    border-left: 1px solid rgba(0,0,0,.1);
+    border-right: none;
+}
+
+[dir="rtl"] .sidebar-collapse .main-sidebar {
+    margin-right: -250px;
+    margin-left: 0;
+}
+
+[dir="rtl"] .sidebar-collapse .content-wrapper,
+[dir="rtl"] .sidebar-collapse .main-header,
+[dir="rtl"] .sidebar-collapse .main-footer {
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+}
+
+[dir="rtl"] .content-wrapper,
+[dir="rtl"] .main-header,
+[dir="rtl"] .main-footer {
+    margin-right: 250px;
+    margin-left: 0;
+    transition: margin-right 0.3s ease-in-out;
+}
+
+/* Sidebar menu items */
+[dir="rtl"] .nav-sidebar .nav-link {
+    text-align: right;
+}
+
+[dir="rtl"] .nav-sidebar .nav-link > .right,
+[dir="rtl"] .nav-sidebar .nav-link > p > .right {
+    left: 1rem;
+    right: auto;
+}
+
+[dir="rtl"] .nav-sidebar .nav-icon {
+    margin-left: 0.5rem;
+    margin-right: 0;
+}
+
+[dir="rtl"] .nav-sidebar .nav-treeview {
+    padding-right: 1rem;
+    padding-left: 0;
+}
+
+[dir="rtl"] .nav-sidebar .nav-treeview > .nav-item > .nav-link {
+    padding-right: 2rem;
+    padding-left: 0;
+}
+
+/* ============================================
+   NAVBAR RTL FIXES
+   ============================================ */
+[dir="rtl"] .navbar-nav {
+    flex-direction: row;
+}
+
+[dir="rtl"] .navbar-nav .nav-item {
+    margin-left: 0.5rem;
+    margin-right: 0;
+}
+
+[dir="rtl"] .ml-auto {
+    margin-right: auto !important;
+    margin-left: 0 !important;
+}
+
+[dir="rtl"] .mr-auto {
+    margin-left: auto !important;
+    margin-right: 0 !important;
+}
+
+/* ============================================
+   CONTENT AREA RTL FIXES
+   ============================================ */
+[dir="rtl"] .content-header {
+    text-align: right;
+}
+
+[dir="rtl"] .breadcrumb {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .breadcrumb-item + .breadcrumb-item::before {
+    padding-left: 0.5rem;
+    padding-right: 0;
+}
+
+/* ============================================
+   CARDS RTL FIXES
+   ============================================ */
+[dir="rtl"] .card-header {
+    text-align: right;
+}
+
+[dir="rtl"] .card-tools {
+    float: left;
+}
+
+[dir="rtl"] .card-title {
+    float: right;
+}
+
+/* ============================================
+   FORMS RTL FIXES
+   ============================================ */
+[dir="rtl"] .form-group label {
+    text-align: right;
+    display: block;
+}
+
+[dir="rtl"] .form-control {
+    text-align: right;
+}
+
+[dir="rtl"] .input-group > .form-control:not(:last-child),
+[dir="rtl"] .input-group > .custom-select:not(:last-child) {
+    border-top-left-radius: 0.25rem;
+    border-bottom-left-radius: 0.25rem;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+[dir="rtl"] .input-group > .form-control:not(:first-child),
+[dir="rtl"] .input-group > .custom-select:not(:first-child) {
+    border-top-right-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+[dir="rtl"] .input-group-prepend {
+    margin-left: -1px;
+    margin-right: 0;
+}
+
+[dir="rtl"] .input-group-append {
+    margin-right: -1px;
+    margin-left: 0;
+}
+
+/* ============================================
+   TABLES RTL FIXES
+   ============================================ */
+[dir="rtl"] .table th,
+[dir="rtl"] .table td {
+    text-align: right;
+}
+
+[dir="rtl"] .dataTables_wrapper .dataTables_filter {
+    float: left;
+    text-align: left;
+}
+
+[dir="rtl"] .dataTables_wrapper .dataTables_length {
+    float: right;
+    text-align: right;
+}
+
+[dir="rtl"] .dataTables_wrapper .dataTables_info {
+    float: right;
+    text-align: right;
+}
+
+[dir="rtl"] .dataTables_wrapper .dataTables_paginate {
+    float: left;
+    text-align: left;
+}
+
+[dir="rtl"] .dataTables_wrapper .dataTables_paginate .paginate_button {
+    margin-left: 0;
+    margin-right: 0.25rem;
+}
+
+/* ============================================
+   BUTTONS RTL FIXES
+   ============================================ */
+[dir="rtl"] .btn-group > .btn:not(:last-child):not(.dropdown-toggle) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
+}
+
+[dir="rtl"] .btn-group > .btn:not(:first-child) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-top-left-radius: 0.25rem;
+    border-bottom-left-radius: 0.25rem;
+}
+
+[dir="rtl"] .btn i,
+[dir="rtl"] .btn .fas,
+[dir="rtl"] .btn .far,
+[dir="rtl"] .btn .fa {
+    margin-left: 0.5rem;
+    margin-right: 0;
+}
+
+/* ============================================
+   DROPDOWN RTL FIXES
+   ============================================ */
+[dir="rtl"] .dropdown-menu {
+    text-align: right;
+    right: 0;
+    left: auto;
+}
+
+[dir="rtl"] .dropdown-menu-right {
+    right: auto;
+    left: 0;
+}
+
+[dir="rtl"] .dropdown-item {
+    text-align: right;
+}
+
+/* ============================================
+   SELECT2 RTL FIXES
+   ============================================ */
+[dir="rtl"] .select2-container--default .select2-selection--single .select2-selection__arrow {
+    left: 1px;
+    right: auto;
+}
+
+[dir="rtl"] .select2-container--default .select2-selection--single .select2-selection__rendered {
+    padding-right: 8px;
+    padding-left: 20px;
+}
+
+/* ============================================
+   ALERTS & BADGES RTL FIXES
+   ============================================ */
+[dir="rtl"] .alert {
+    text-align: right;
+}
+
+[dir="rtl"] .alert-dismissible .close {
+    left: 0;
+    right: auto;
+}
+
+/* ============================================
+   MODAL RTL FIXES
+   ============================================ */
+[dir="rtl"] .modal-header .close {
+    margin: -1rem auto -1rem -1rem;
+}
+
+[dir="rtl"] .modal-footer {
+    justify-content: flex-start;
+}
+
+/* ============================================
+   INFO BOX & SMALL BOX RTL FIXES
+   ============================================ */
+[dir="rtl"] .info-box .info-box-icon {
+    border-radius: 0 0.25rem 0.25rem 0;
+}
+
+[dir="rtl"] .info-box-content {
+    padding: 5px 15px 5px 10px;
+    text-align: right;
+}
+
+[dir="rtl"] .small-box .icon {
+    left: 10px;
+    right: auto;
+}
+
+[dir="rtl"] .small-box .inner {
+    padding: 10px 10px 10px 90px;
+    text-align: right;
+}
+
+/* ============================================
+   PAGINATION RTL FIXES
+   ============================================ */
+[dir="rtl"] .pagination {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .page-item:first-child .page-link {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
+}
+
+[dir="rtl"] .page-item:last-child .page-link {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-top-left-radius: 0.25rem;
+    border-bottom-left-radius: 0.25rem;
+}
+
+/* ============================================
+   FLOAT UTILITIES RTL OVERRIDE
+   ============================================ */
+[dir="rtl"] .float-left {
+    float: right !important;
+}
+
+[dir="rtl"] .float-right {
+    float: left !important;
+}
+
+[dir="rtl"] .text-left {
+    text-align: right !important;
+}
+
+[dir="rtl"] .text-right {
+    text-align: left !important;
+}
+
+/* ============================================
+   SPACING UTILITIES RTL OVERRIDE
+   ============================================ */
+[dir="rtl"] .pl-1, [dir="rtl"] .pl-2, [dir="rtl"] .pl-3, [dir="rtl"] .pl-4, [dir="rtl"] .pl-5 {
+    padding-left: 0 !important;
+}
+
+[dir="rtl"] .pr-1, [dir="rtl"] .pr-2, [dir="rtl"] .pr-3, [dir="rtl"] .pr-4, [dir="rtl"] .pr-5 {
+    padding-right: 0 !important;
+}
+
+[dir="rtl"] .ml-1, [dir="rtl"] .ml-2, [dir="rtl"] .ml-3, [dir="rtl"] .ml-4, [dir="rtl"] .ml-5 {
+    margin-left: 0 !important;
+}
+
+[dir="rtl"] .mr-1, [dir="rtl"] .mr-2, [dir="rtl"] .mr-3, [dir="rtl"] .mr-4, [dir="rtl"] .mr-5 {
+    margin-right: 0 !important;
+}
+
+/* ============================================
+   SIDEBAR TOGGLE BUTTON FIX
+   ============================================ */
+[dir="rtl"] [data-widget="pushmenu"] {
+    margin-left: 0;
+    margin-right: auto;
+}
+
+/* ============================================
+   MOBILE RESPONSIVE RTL
+   ============================================ */
+@media (max-width: 991.98px) {
+    [dir="rtl"] .content-wrapper,
+    [dir="rtl"] .main-header,
+    [dir="rtl"] .main-footer {
+        margin-right: 0 !important;
+        margin-left: 0 !important;
+    }
+    
+    [dir="rtl"] .main-sidebar {
+        right: -250px;
+        left: auto;
+    }
+    
+    [dir="rtl"] .sidebar-open .main-sidebar {
+        right: 0;
+        left: auto;
+    }
+}
+
+/* ============================================
+   FIX EMPTY CONTENT AREA
+   ============================================ */
+.content-wrapper {
+    min-height: calc(100vh - 57px);
+    background-color: #f4f6f9;
+}
+
+.content {
+    padding: 1rem;
+}
+
+/* Ensure content is visible */
+.content-wrapper > .content {
+    display: block !important;
+    visibility: visible !important;
+}

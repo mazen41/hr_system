@@ -1,0 +1,61 @@
+/* CRITICAL FIXES v1.0 */
+
+/* 1. Sidebar Height & Background Fix */
+.main-sidebar .sidebar {
+    height: calc(100vh - 60px) !important; /* Adjusted for navbar height */
+    min-height: calc(100vh - 60px) !important;
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+    background-color: #0d21a5 !important; /* Hardcoded brand color */
+    background: #0d21a5 !important;
+    overflow-y: auto !important;
+    display: block !important;
+}
+
+/* 2. Mobile Sidebar - PREVENT ICON BLEED */
+@media (max-width: 991.98px) {
+    /* Force hide sidebar when NOT open */
+    .main-sidebar {
+        transform: translateX(100%) !important;
+        visibility: hidden !important;
+        width: 0 !important;
+        display: none !important; /* Aggressive hide */
+    }
+    
+    /* Only show when explicitly open */
+    .sidebar-open .main-sidebar,
+    body.sidebar-open .main-sidebar {
+        transform: translateX(0) !important;
+        visibility: visible !important;
+        width: 260px !important;
+        display: flex !important;
+    }
+    
+    /* Kill sidebar-mini effects on mobile */
+    body.sidebar-mini .main-sidebar,
+    body.sidebar-collapse .main-sidebar {
+        width: 0 !important; 
+    }
+}
+
+/* 3. Dropdown Centering */
+.dropdown-menu {
+    text-align: center !important;
+}
+
+.dropdown-item, 
+.dropdown-menu > li > a {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
+    width: 100% !important;
+}
+
+/* 4. Fix Profile Dropdown Specifically */
+.user-menu .dropdown-menu {
+    left: 0 !important;
+    right: auto !important;
+    transform: none !important;
+    top: 50px !important;
+}

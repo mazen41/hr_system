@@ -1,0 +1,38 @@
+RewriteEngine On
+RewriteBase /HR/
+
+# DataTables Arabic JSON via PHP for guaranteed UTF-8 (MUST be before static file check)
+RewriteRule ^dist/js/dataTables\.arabic\.json$ dist/js/dataTables.arabic.php [L]
+
+# Route API requests to API handler (NEW - Phase 1)
+RewriteRule ^api/v1/(.*)$ api/v1/index.php?route=$1 [L,QSA]
+
+# Route users-app/* to users-app handler
+RewriteRule ^users-app/(.*)$ users-app/index.php?action=$1 [L,QSA]
+
+# If the request is for an existing file or directory, serve it directly
+# EXCEPT .php files (those go through index.php router)
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteCond %{REQUEST_URI} !\.php$
+RewriteRule ^ - [L]
+
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Route hr-app/* to hr-app handler
+RewriteRule ^hr-app/(.*)$ hr-app/index.php?action=$1 [L,QSA]
+
+# Route sal-app/* to sal-app handler
+RewriteRule ^sal-app/(.*)$ sal-app/index.php?action=$1 [L,QSA]
+
+# Route sheard/* to sheard handler
+RewriteRule ^sheard/(.*)$ sheard/index.php?action=$1 [L,QSA]
+
+# Don't route index.php itself (avoid loop)
+RewriteRule ^index\.php$ - [L]
+
+# Route clean URLs (no extension) through index.php
+RewriteRule ^([a-zA-Z0-9_-]+)$ index.php?page=$1 [L,QSA]
+
+# Route .php files through index.php too (so bootstrap runs)
+RewriteRule ^([a-zA-Z0-9_-]+)\.php$ index.php?page=$1 [L,QSA]

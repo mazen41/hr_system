@@ -1,0 +1,883 @@
+/**
+ * Vision HR - Global Responsive Overrides
+ * Ensures all admin/employer pages are fully responsive
+ * Covers: tables, forms, modals, cards, invoices, info-boxes, badges, buttons
+ */
+
+/* ===== TABLE RESPONSIVENESS ===== */
+.table-responsive {
+    -webkit-overflow-scrolling: touch;
+    overflow-x: auto;
+    width: 100%;
+}
+
+/* Wrap all tables in responsive container if not already */
+.content .card-body > table:not(.table-responsive table),
+.content .invoice > table:not(.table-responsive table),
+section.content table:not(.table-responsive table) {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+}
+
+/* DataTables responsive */
+.dataTables_wrapper {
+    overflow-x: auto;
+    width: 100%;
+}
+
+div.dataTables_wrapper div.dataTables_filter input {
+    width: auto;
+    max-width: 200px;
+}
+
+/* ===== FORM RESPONSIVENESS ===== */
+.form-horizontal .form-group {
+    margin-bottom: 12px;
+}
+
+/* ===== INVOICE / CARD OVERFLOW ===== */
+.invoice, .card-body {
+    overflow-x: auto;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* ===== IMAGES ===== */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* ===== MODAL RESPONSIVENESS ===== */
+.modal {
+    z-index: 10500 !important;
+}
+
+.modal-backdrop {
+    z-index: 10400 !important;
+}
+
+.modal-dialog {
+    margin: 10px auto;
+    max-width: 95vw;
+    z-index: 10501;
+}
+
+.modal-content {
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    border: none;
+    background: #fff;
+}
+
+.modal-header {
+    background: #f8fafc;
+    border-bottom: 1px solid #e5e7eb;
+    border-radius: 12px 12px 0 0;
+    padding: 16px 20px;
+}
+
+.modal-header .modal-title {
+    font-weight: 600;
+    font-size: 16px;
+    color: #1f2937;
+}
+
+.modal-header .close {
+    font-size: 24px;
+    opacity: 0.6;
+    padding: 0;
+    margin: -8px -8px -8px auto;
+}
+
+.modal-body {
+    overflow-x: auto;
+    word-wrap: break-word;
+    padding: 20px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.modal-footer {
+    background: #f8fafc;
+    border-top: 1px solid #e5e7eb;
+    border-radius: 0 0 12px 12px;
+    padding: 12px 20px;
+}
+
+/* Modal form elements */
+.modal-body .form-group {
+    margin-bottom: 16px;
+}
+
+.modal-body .form-control,
+.modal-body .custom-select,
+.modal-body select.form-control {
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    padding: 10px 12px;
+    font-size: 14px;
+}
+
+.modal-body .form-control:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.modal-body label {
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+/* Select2 inside modals - z-index fix */
+.select2-container--open {
+    z-index: 10600 !important;
+}
+
+.select2-dropdown {
+    z-index: 10600 !important;
+}
+
+/* Bootstrap Select inside modals */
+.modal .bootstrap-select .dropdown-menu {
+    z-index: 10600 !important;
+}
+
+/* Ensure modal form elements are visible and full width */
+.modal .form-control,
+.modal select,
+.modal input,
+.modal textarea {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 100% !important;
+}
+
+/* Select2 width fix inside modals */
+.modal .select2-container {
+    width: 100% !important;
+}
+
+/* Fix for modal select dropdowns */
+.modal select.form-control {
+    appearance: auto;
+    -webkit-appearance: menulist;
+    -moz-appearance: menulist;
+    background-color: #fff;
+    height: auto;
+    min-height: 38px;
+}
+
+/* ===== PRINT ===== */
+@media print {
+    .main-sidebar, .main-header, .main-footer, .sidebar-overlay,
+    .no-print, .btn, .dataTables_filter, .dataTables_length,
+    .dataTables_paginate, .dataTables_info {
+        display: none !important;
+    }
+    .content-wrapper {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    body {
+        font-size: 12pt;
+    }
+    .table td, .table th {
+        padding: 4px 6px !important;
+    }
+}
+
+/* ===== TABLET (max-width: 991.98px) ===== */
+@media (max-width: 991.98px) {
+    /* Forms: stack columns */
+    .form-horizontal .col-md-2,
+    .form-horizontal .col-md-3,
+    .form-horizontal .col-md-4,
+    .form-horizontal .col-md-5,
+    .form-horizontal .col-md-6,
+    .form-horizontal .col-md-8,
+    .form-horizontal .col-md-10 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    /* Content header: stack title and buttons */
+    .content-header .row > .col-7,
+    .content-header .row > .col-5 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    .content-header .row > .col-5 {
+        margin-top: 8px;
+        text-align: right !important;
+    }
+
+    /* Info boxes grid */
+    .info-box {
+        margin-bottom: 12px;
+    }
+
+    /* Modal full width */
+    .modal-lg, .modal-xl {
+        max-width: 95vw;
+    }
+
+    /* DataTables controls */
+    .dataTables_wrapper .dataTables_filter,
+    .dataTables_wrapper .dataTables_length {
+        float: none;
+        text-align: right;
+        margin-bottom: 8px;
+    }
+    .dataTables_wrapper .dataTables_info {
+        float: none;
+        text-align: center;
+        margin-top: 8px;
+    }
+    .dataTables_wrapper .dataTables_paginate {
+        float: none;
+        text-align: center;
+        margin-top: 8px;
+    }
+
+    /* Filter area */
+    .invoice .row > [class*="col-md-"] {
+        flex: 0 0 50%;
+        max-width: 50%;
+        margin-bottom: 8px;
+    }
+
+    /* Buttons in header */
+    .content-header .btn {
+        padding: 8px 14px !important;
+        font-size: 0.9rem !important;
+    }
+
+    /* Badge responsive */
+    .badge {
+        font-size: 0.8rem;
+        padding: 4px 8px;
+    }
+
+    /* Chart containers */
+    canvas {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+}
+
+/* ===== MOBILE (max-width: 767.98px) ===== */
+@media (max-width: 767.98px) {
+    /* Stack all form columns */
+    .row > [class*="col-md-"],
+    .row > [class*="col-lg-"] {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    /* Keep col-6 and col-sm-6 as half-width */
+    .row > .col-6,
+    .row > .col-sm-6 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+
+    /* Content padding */
+    .content-header { padding: 10px 12px; }
+    .content, section.content { padding: 0 10px 16px; }
+
+    /* Card body padding */
+    .card-body {
+        padding: 16px 12px;
+    }
+
+    /* Invoice padding */
+    .invoice {
+        padding: 14px 10px;
+    }
+
+    /* Table font size */
+    .table td, .table th {
+        font-size: 0.85rem;
+        padding: 8px 6px;
+        white-space: nowrap;
+    }
+
+    /* DataTables: let responsive plugin handle column visibility */
+    .dataTables_wrapper {
+        overflow-x: auto;
+    }
+
+    /* Filter area: full width columns */
+    .invoice .row > [class*="col-md-"] {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    /* Modal */
+    .modal-dialog {
+        margin: 5px;
+        max-width: calc(100vw - 10px);
+    }
+    .modal-body {
+        padding: 16px 12px;
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+    .modal-header {
+        padding: 12px 16px;
+    }
+    .modal-footer {
+        padding: 10px 16px;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+    .modal-footer .btn {
+        flex: 1;
+        min-width: 100px;
+    }
+
+    /* Info box */
+    .info-box {
+        min-height: 70px;
+    }
+    .info-box-icon {
+        width: 60px;
+        font-size: 1.2rem;
+    }
+    .info-box-text {
+        font-size: 0.8rem;
+    }
+    .info-box-number {
+        font-size: 1.1rem;
+    }
+
+    /* Select2 */
+    .select2-container {
+        width: 100% !important;
+    }
+
+    /* Bootstrap Select */
+    .bootstrap-select {
+        width: 100% !important;
+    }
+
+    /* Buttons group */
+    .btn-group {
+        flex-wrap: wrap;
+    }
+
+    /* Action buttons in tables */
+    .table .btn-sm, .table .btn-xs {
+        padding: 4px 8px !important;
+        font-size: 0.75rem !important;
+        margin: 2px 1px;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb {
+        font-size: 0.85rem;
+        padding: 8px 12px;
+    }
+
+    /* Alert */
+    .alert {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+    }
+
+    /* Content header buttons */
+    .content-header .btn {
+        padding: 6px 10px !important;
+        font-size: 0.85rem !important;
+    }
+    .content-header .btn i {
+        margin: 0;
+    }
+
+    /* Employee photo in tables */
+    .table img.img-circle,
+    .table img[style*="border-radius"] {
+        width: 30px !important;
+        height: 30px !important;
+    }
+
+    /* Salary slip / report tables */
+    .table-bordered td, .table-bordered th {
+        padding: 6px 8px;
+        font-size: 0.8rem;
+    }
+}
+
+/* ===== SMALL MOBILE (max-width: 480px) ===== */
+@media (max-width: 480px) {
+    /* Stack col-6 to full width on very small screens */
+    .row > .col-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    /* Keep specific stat grids as 2-col */
+    .ess-stat-grid .col-6 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+
+    /* Content padding minimal */
+    .content-header { padding: 8px 8px; }
+    .content, section.content { padding: 0 6px 12px; }
+
+    /* Card body */
+    .card-body {
+        padding: 12px 8px;
+    }
+
+    /* Invoice */
+    .invoice {
+        padding: 10px 8px;
+    }
+
+    /* Table */
+    .table td, .table th {
+        font-size: 0.78rem;
+        padding: 6px 4px;
+    }
+
+    /* Buttons */
+    .btn {
+        padding: 6px 8px !important;
+        font-size: 0.8rem !important;
+    }
+
+    /* Modal */
+    .modal-dialog {
+        margin: 2px;
+    }
+    .modal-body {
+        padding: 12px 8px;
+    }
+
+    /* Form controls */
+    .form-control {
+        font-size: 0.9rem !important;
+        padding: 8px 10px !important;
+    }
+
+    /* Page title */
+    .page-title {
+        font-size: 0.95rem;
+    }
+
+    /* Info box */
+    .info-box {
+        min-height: 60px;
+    }
+    .info-box-icon {
+        width: 50px;
+    }
+
+    /* Select2 dropdown */
+    .select2-results__option {
+        padding: 8px 10px;
+        font-size: 0.85rem;
+    }
+
+    /* DateRangePicker */
+    .daterangepicker {
+        width: calc(100vw - 20px) !important;
+        left: 10px !important;
+        right: 10px !important;
+    }
+    .daterangepicker .calendar-table {
+        font-size: 0.75rem;
+    }
+    .daterangepicker td, .daterangepicker th {
+        min-width: 28px;
+        height: 28px;
+        line-height: 28px;
+    }
+}
+
+/* ===== LANDSCAPE MOBILE ===== */
+@media (max-width: 767.98px) and (orientation: landscape) {
+    .modal-body {
+        max-height: 50vh;
+    }
+    .content-header {
+        padding: 6px 10px;
+    }
+}
+
+/* ===== TOUCH DEVICE OPTIMIZATIONS ===== */
+@media (hover: none) and (pointer: coarse) {
+    /* Larger touch targets */
+    .btn {
+        min-height: 40px;
+    }
+    .table .btn-sm, .table .btn-xs {
+        min-height: 34px;
+        min-width: 34px;
+    }
+    .form-control {
+        min-height: 42px;
+    }
+    .nav-link {
+        min-height: 44px;
+    }
+    .dropdown-item {
+        min-height: 44px;
+        padding: 10px 16px;
+    }
+    /* Prevent double-tap zoom */
+    * {
+        touch-action: manipulation;
+    }
+}
+
+/* ===== UTILITY CLASSES ===== */
+.overflow-auto { overflow: auto; }
+.overflow-hidden { overflow: hidden; }
+.text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.w-100 { width: 100% !important; }
+.mw-100 { max-width: 100% !important; }
+
+/* ===== CARD GRID SYSTEM ===== */
+.card-grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(4, 1fr);
+}
+.card-grid-3 { grid-template-columns: repeat(3, 1fr); }
+.card-grid-2 { grid-template-columns: repeat(2, 1fr); }
+.card-grid-1 { grid-template-columns: 1fr; }
+
+@media (max-width: 1199.98px) {
+    .card-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 991.98px) {
+    .card-grid, .card-grid-3 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 767.98px) {
+    .card-grid, .card-grid-3, .card-grid-2 { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+}
+@media (max-width: 575.98px) {
+    .card-grid, .card-grid-3, .card-grid-2 { grid-template-columns: 1fr; gap: 10px; }
+}
+
+/* Auto-fit card grid */
+.card-grid-auto {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+@media (max-width: 575.98px) {
+    .card-grid-auto { grid-template-columns: 1fr; gap: 10px; }
+}
+
+/* Hide on mobile / show on mobile */
+@media (max-width: 767.98px) {
+    .d-mobile-none { display: none !important; }
+    .d-mobile-block { display: block !important; }
+}
+@media (min-width: 768px) {
+    .d-desktop-none { display: none !important; }
+    .d-desktop-block { display: block !important; }
+}
+
+/* ===== ADMIN PAGE COMPONENTS ===== */
+
+/* Stats Grid - used in rewards, evaluations, etc. */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+@media (max-width: 767.98px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    .stat-card {
+        padding: 15px 10px !important;
+    }
+    .stat-number {
+        font-size: 20px !important;
+    }
+    .stat-label {
+        font-size: 11px !important;
+    }
+}
+
+@media (max-width: 400px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Page Navigation Header */
+.page-nav {
+    padding: 15px 20px;
+    background: #fff;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 0;
+}
+
+@media (max-width: 767.98px) {
+    .page-nav {
+        padding: 12px 15px;
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 10px;
+    }
+    .page-nav .page-title {
+        font-size: 1.1rem;
+        margin-bottom: 0 !important;
+    }
+    .page-nav .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Card Components */
+.reward-card,
+.evaluation-card,
+.approval-card {
+    margin-bottom: 15px;
+}
+
+@media (max-width: 767.98px) {
+    .reward-card,
+    .evaluation-card,
+    .approval-card {
+        padding: 15px !important;
+    }
+    .employee-info {
+        flex-wrap: wrap;
+    }
+    .employee-photo {
+        width: 40px !important;
+        height: 40px !important;
+    }
+    .reward-amount {
+        font-size: 18px !important;
+    }
+}
+
+/* Form Row Responsive */
+.form-row-responsive {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+@media (max-width: 575.98px) {
+    .form-row-responsive {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Criteria/Data Tables in Admin */
+.criteria-table,
+.admin-table {
+    width: 100%;
+    overflow-x: auto;
+    display: block;
+}
+
+.criteria-table table,
+.admin-table table {
+    min-width: 600px;
+}
+
+/* Flex Gap Polyfill for older browsers */
+.d-flex.gap-2 > * { margin-left: 0.5rem; }
+.d-flex.gap-2 > *:first-child { margin-left: 0; }
+.d-flex.gap-3 > * { margin-left: 1rem; }
+.d-flex.gap-3 > *:first-child { margin-left: 0; }
+
+/* Action Buttons in Cards */
+@media (max-width: 575.98px) {
+    .reward-card .d-flex.gap-2,
+    .approval-card .d-flex.gap-2 {
+        flex-direction: column;
+    }
+    .reward-card .d-flex.gap-2 .btn,
+    .approval-card .d-flex.gap-2 .btn {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+}
+
+/* Timeline/History Components */
+.workflow-timeline,
+.approval-timeline {
+    padding-right: 20px;
+}
+
+@media (max-width: 575.98px) {
+    .workflow-timeline,
+    .approval-timeline {
+        padding-right: 10px;
+    }
+    .workflow-timeline .timeline-item,
+    .approval-timeline .timeline-item {
+        padding: 10px;
+    }
+}
+
+/* Tab Navigation */
+.nav-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+.nav-tabs::-webkit-scrollbar {
+    display: none;
+}
+.nav-tabs .nav-link {
+    white-space: nowrap;
+}
+
+@media (max-width: 575.98px) {
+    .nav-tabs .nav-link {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
+}
+
+/* Settings Page Navigation */
+.settings-nav {
+    margin-bottom: 20px;
+}
+
+@media (max-width: 991.98px) {
+    .settings-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    .settings-nav .nav-link {
+        flex: 1;
+        min-width: 120px;
+        text-align: center;
+        justify-content: center;
+    }
+}
+
+/* Chart Containers */
+.chart-container {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+}
+
+@media (max-width: 575.98px) {
+    .chart-container {
+        height: 250px !important;
+    }
+    .chart-container canvas {
+        max-height: 250px !important;
+    }
+}
+
+/* Progress Bars */
+.progress {
+    height: 8px;
+    border-radius: 4px;
+}
+
+@media (max-width: 575.98px) {
+    .progress {
+        height: 6px;
+    }
+}
+
+/* Badge Groups */
+.badge-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+/* Employee List Items */
+.employee-list-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+@media (max-width: 575.98px) {
+    .employee-list-item {
+        flex-wrap: wrap;
+        padding: 10px;
+    }
+    .employee-list-item .employee-actions {
+        width: 100%;
+        margin-top: 10px;
+        display: flex;
+        gap: 5px;
+    }
+}
+
+/* Filter Forms */
+.filter-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: flex-end;
+}
+
+@media (max-width: 767.98px) {
+    .filter-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .filter-form .form-group {
+        margin-bottom: 10px;
+        width: 100%;
+    }
+    .filter-form .btn {
+        width: 100%;
+    }
+}
+
+/* Salary Slip / Invoice Print Styles */
+@media (max-width: 575.98px) {
+    .salary-slip,
+    .invoice-print {
+        font-size: 12px;
+    }
+    .salary-slip table td,
+    .salary-slip table th,
+    .invoice-print table td,
+    .invoice-print table th {
+        padding: 4px 6px !important;
+    }
+}
+
+/* Fix for RTL flex gap */
+[dir="rtl"] .d-flex.gap-2 > * { margin-left: 0; margin-right: 0.5rem; }
+[dir="rtl"] .d-flex.gap-2 > *:first-child { margin-right: 0; }
+[dir="rtl"] .d-flex.gap-3 > * { margin-left: 0; margin-right: 1rem; }
+[dir="rtl"] .d-flex.gap-3 > *:first-child { margin-right: 0; }
+
+/* Content Wrapper Responsive */
+@media (max-width: 991.98px) {
+    .content-wrapper {
+        margin-right: 0 !important;
+    }
+}

@@ -1,0 +1,45 @@
+/**
+ * UI Fixes - Sidebar spacing, dropdown centering, ESS card fixes
+ * Cache-busted version
+ */
+
+/* ===== SIDEBAR SPACING FIX ===== */
+.main-sidebar .sidebar {
+    padding: 0 !important;
+}
+
+.main-sidebar .sidebar nav {
+    padding: 0 10px !important;
+}
+
+/* ===== DROPDOWN CENTER FIX ===== */
+.dropdown-menu {
+    text-align: center !important;
+}
+
+.dropdown-menu .dropdown-item,
+.navbar .dropdown-menu .dropdown-item,
+.navbar-nav .dropdown-menu .dropdown-item {
+    text-align: center !important;
+    justify-content: center !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+/* ===== NOTIFICATION DROPDOWN CENTER ===== */
+.notification-dropdown .dropdown-item,
+.notification-dropdown .dropdown-header,
+.notification-dropdown a.dropdown-item:last-child {
+    text-align: center !important;
+    justify-content: center !important;
+}
+
+/* ===== ESS CARD HEIGHT FIX ===== */
+.ess-stat-card {
+    height: auto !important;
+    min-height: auto !important;
+}
+
+.ess-form-card-enhanced {
+    height: auto !important;
+}

@@ -1,0 +1,35 @@
+server {
+    listen 80;
+    server_name hr.gt-academy.com;
+    return 301 https://hr.gt-academy.com$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name hr.gt-academy.com;
+    root /var/www/hr.gt-academy.com;
+    index index.php index.html;
+
+    ssl_certificate /etc/letsencrypt/live/hr.gt-academy.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/hr.gt-academy.com/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    # API v1 routing - rewrite to index.php with route parameter
+    location /api/v1/ {
+        rewrite ^/api/v1/(.*)$ /api/v1/index.php?route=$1 last;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
+    }
+
+    location ~ /\.ht {
+        deny all;
+    }
+}

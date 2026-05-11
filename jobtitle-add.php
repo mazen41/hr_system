@@ -225,7 +225,7 @@ if(isset($_GET['id'])){
  include_once('inc/footer.php');
 
 ?>
- <script src="plugins/select2_n/dist/js/select2.full.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 
 <script>
@@ -252,7 +252,7 @@ $('#AddShift').on('submit', function(e){
 	var form_data = $(this).serialize() + '&id=' + param_id;
 	if($(this).valid()){
 	$.ajax({
-        url:"./hr-app/jobtitle-add",
+        url:"hr-app/index.php?action=jobtitle-add",
         method:"POST", 
 		data:form_data,
 		dataType:"json", 
@@ -311,7 +311,7 @@ $('#AddShift').on('submit', function(e){
         var selectedValue =$(this).val(); 
         if (selectedValue) {
             $.ajax({
-                url: '/hr-app/info-of-section-and-job-title',
+                url: 'info-of-section-and-job-title',
                 type: 'POST',
                 data: { value: selectedValue },
 				dataType:"json",
