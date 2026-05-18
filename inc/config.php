@@ -7,7 +7,7 @@ if (!defined('DB_PASS')) define('DB_PASS', '');
 if (!defined('DB_CHARSET')) define('DB_CHARSET', 'utf8mb4');
 
 // Site settings
-if (!defined('SITE_URL')) define('SITE_URL', 'https://hr.gt-academy.com/');
+define('SITE_URL', 'https://hr.tawselia.com/');
 if (!defined('SITE_TITLE')) define('SITE_TITLE', 'Vision HR');
 if (!defined('UPLOADS_DIR')) define('UPLOADS_DIR', __DIR__ . '/../uploads/');
 
