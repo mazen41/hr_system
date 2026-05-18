@@ -14,6 +14,9 @@ if (session_status() === PHP_SESSION_NONE) {
     ini_set('session.cookie_samesite', 'Lax');
     session_start();
 }
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 require_once __DIR__ . '/../inc/config.php';
 require_once __DIR__ . '/../inc/User.php';
 require_once __DIR__ . '/../inc/AuditLog.php';
@@ -44,67 +47,13 @@ $allowedBranches = $User->branches ?? '1';
 // Helper: generate QR code data URL (internal - scannable pattern)
 function generateQRDataURL($text)
 {
-    try {
-        $size = 300;
-        $margin = 10;
-        $qrSize = $size - (2 * $margin);
-        $moduleSize = $qrSize / 25; // 25x25 modules
+    return 'https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' . urlencode((string) $text);
+}
 
-        // Start SVG
-        $svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' . $size . '" height="' . $size . '" viewBox="0 0 ' . $size . ' ' . $size . '">';
-        $svg .= '<rect width="100%" height="100%" fill="white"/>';
-
-        $hash = crc32($text);
-
-        // Draw QR modules with proper structure
-        for ($row = 0; $row < 25; $row++) {
-            for ($col = 0; $col < 25; $col++) {
-                $isDark = false;
-
-                // Position markers (corners) - 7x7 squares
-                if (($row < 7 && $col < 7) || ($row < 7 && $col >= 18) || ($row >= 18 && $col < 7)) {
-                    // Outer border
-                    if ($row == 0 || $row == 6 || $col == 0 || $col == 6) {
-                        $isDark = true;
-                    }
-                    // Inner 3x3 square
-                    else if (($row >= 2 && $row <= 4) && ($col >= 2 && $col <= 4)) {
-                        $isDark = true;
-                    }
-                }
-                // Timing patterns (dotted lines)
-                else if (($row == 6 && $col >= 8 && $col <= 16) || ($col == 6 && $row >= 8 && $row <= 16)) {
-                    $isDark = ($col % 2 == 0) || ($row % 2 == 0);
-                }
-                // Data pattern - more structured for better scannability
-                else if (($row >= 8 && $row <= 16) || ($col >= 8 && $col <= 16)) {
-                    // Use hash for pseudo-random but consistent pattern
-                    $index = $row * 25 + $col;
-                    $isDark = (($hash + $index) % 2) === 0;
-                }
-                // Additional alignment pattern (center)
-                else if ($row == 12 && $col == 12) {
-                    $isDark = true;
-                }
-
-                if ($isDark) {
-                    $x = $margin + ($col * $moduleSize);
-                    $y = $margin + ($row * $moduleSize);
-                    $svg .= '<rect x="' . $x . '" y="' . $y . '" width="' . $moduleSize . '" height="' . $moduleSize . '" fill="black"/>';
-                }
-            }
-        }
-
-        // Add text overlay (smaller, less intrusive)
-        $shortText = substr($text, 0, 6);
-        $svg .= '<text x="' . ($size / 2) . '" y="' . ($size - 15) . '" text-anchor="middle" font-family="monospace" font-size="8" fill="#888">' . htmlspecialchars($shortText) . '</text>';
-        $svg .= '</svg>';
-
-        return 'data:image/svg+xml;base64,' . base64_encode($svg);
-
-    } catch (Exception $e) {
-        return 'data:image/svg+xml;base64,' . base64_encode('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><rect width="300" height="300" fill="white"/><text x="50%" y="50%" text-anchor="middle" font-family="monospace" font-size="12" fill="black">QR Error</text></svg>');
-    }
+function validateCSRF(): bool
+{
+    $token = $_POST['csrf_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
+    return hash_equals($_SESSION['csrf_token'] ?? '', $token);
 }
 
 // Helper function to format data for select pickers
@@ -513,6 +462,13 @@ if (!$user && !in_array($action, ['', 'qr-validate'])) {
 }
 // --- Function to handle 'report-all-emplyer' ---
 
+$employee_status_map = [
+    1 => 'استقالة',
+    2 => 'فصل',
+    3 => 'إنهاء عقد',
+    4 => 'وفاة',
+];
+
 switch ($action) {
 
     // ============================================================
@@ -712,7 +668,7 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
             if ($empName === '') {
                 $empName = (string) ($r['UserEmail'] ?? ('#' . $r['UserID']));
             }
-            $photo = !empty($r['Photo']) ? '<img src="uploads/basics/' . $r['Photo'] . '" class="img-circle" width="30" height="30"> ' : '<i class="fas fa-user-circle" style="font-size:30px;color:#ccc"></i> ';
+            $photo = !empty($r['Photo']) ? '<img src="uploads/photos/' . $r['Photo'] . '" class="img-circle" width="30" height="30"> ' : '<i class="fas fa-user-circle" style="font-size:30px;color:#ccc"></i> ';
             $status = empty($r['IsDisabled']) ? '<span class="badge badge-success">نشط</span>' : '<span class="badge badge-danger">موقوف</span>';
             $currency = trim((string) ($r['Currency'] ?? ''));
             if ($currency === '' || preg_match('/�|�/', $currency) || strtoupper($currency) === 'SAR') {
@@ -724,10 +680,10 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
             <div class="d-flex flex-column">
                 <small class="text-muted">الشهادات: ' . $certCount . '</small>
                 <small class="text-muted">الخبرات: ' . $expCount . '</small>
-                <a href="emp-info?id=' . $r['UserID'] . '#certificates" class="btn btn-xs btn-outline-secondary mt-1">عرض الملف</a>
+                <a href="/hr-app/emp-info?id=' . $r['UserID'] . '#certificates" class="btn btn-xs btn-outline-secondary mt-1">عرض الملف</a>
             </div>';
-            $actions = '<a href="emp-info?id=' . $r['UserID'] . '" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a> ';
-            $actions .= '<a href="employer-add?id=' . $r['UserID'] . '" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></a>';
+            $actions = '<a href="/hr-app/emp-info?id=' . $r['UserID'] . '" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a> ';
+            $actions .= '<a href="/hr-app/employer-add?id=' . $r['UserID'] . '" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></a>';
 
             $formatted[] = [
                 $photo . $empName,
@@ -1338,9 +1294,12 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
             ];
         }
 
+        $totalUnfilteredStmt = $connect_pdo->query("SELECT COUNT(DISTINCT EmpID, Date) FROM attendancet");
+        $recordsTotal = (int) $totalUnfilteredStmt->fetchColumn();
+
         echo json_encode([
             'draw' => $draw,
-            'recordsTotal' => $total,
+            'recordsTotal' => $recordsTotal,
             'recordsFiltered' => $total,
             'data' => $formatted
         ], JSON_UNESCAPED_UNICODE);
@@ -5111,7 +5070,7 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
                     $dayLeave,
                     $description,
                     $isDraft,
-                    ($isDraft ? null : 0),
+                    ($isDraft ? -1 : 0),
                     $id
                 ]);
                 $data = ['id' => $id];
@@ -5129,7 +5088,7 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
                     $dayLeave,
                     $description,
                     $isDraft,
-                    ($isDraft ? null : 0),
+                    ($isDraft ? -1 : 0),
                     $userId
                 ]);
                 $newId = $connect_pdo->lastInsertId();
@@ -5293,6 +5252,8 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
                     $userId
                 ]);
                 $newId = $connect_pdo->lastInsertId();
+                $updateUser = $connect_pdo->prepare("UPDATE tblusers SET lastversion = ? WHERE UserID = ?");
+                $updateUser->execute([$newId, $empId]);
                 $data = ['id' => $newId];
                 $msg = 'تم إضافة تجديد العقد بنجاح';
             }
