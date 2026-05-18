@@ -5750,6 +5750,13 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
             $value = trim((string) $value);
             return $value !== '' ? $value : null;
         };
+        $normalizeDate = static function ($value): ?string {
+            if ($value === null) {
+                return null;
+            }
+            $value = trim((string) $value);
+            return $value === '' ? null : $value;
+        };
 
         // Contract/Renewal data
         $sectionId = intval($_POST['user_section'] ?? 0);
@@ -5761,8 +5768,8 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
         $fingerId = $normalizeMultiSelect($_POST['emp_finger'] ?? $_POST['user_finger'] ?? null);
         $salary = $_POST['emp_salary'] ?? '';
         $currency = $_POST['currency'] ?? 'SAR';
-        $contractStart = $_POST['emp_contract_S'] ?? null;
-        $contractEnd = $_POST['emp_contract_F'] ?? null;
+        $contractStart = $normalizeDate($_POST['emp_contract_S'] ?? null);
+        $contractEnd = $normalizeDate($_POST['emp_contract_F'] ?? null);
         $insuranceId = $normalizeMultiSelect($_POST['emp_insurance'] ?? $_POST['user_insuance'] ?? null);
         $bankName = trim($_POST['back'] ?? '');
         $bankAccount = trim($_POST['account_number'] ?? '');
@@ -5777,17 +5784,17 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
 
         // ID documents (Texts & Dates)
         $idH = trim($_POST['emp_Id'] ?? '');
-        $idHStart = $_POST['ID_Emp_date_S'] ?? null;
-        $idHEnd = $_POST['ID_Emp_date_F'] ?? null;
+        $idHStart = $normalizeDate($_POST['ID_Emp_date_S'] ?? null);
+        $idHEnd = $normalizeDate($_POST['ID_Emp_date_F'] ?? null);
         $idLicense = trim($_POST['emp_IDD'] ?? '');
-        $idLicenseStart = $_POST['emp_IDD_Date_S'] ?? null;
-        $idLicenseEnd = $_POST['emp_IDD_Date_F'] ?? null;
+        $idLicenseStart = $normalizeDate($_POST['emp_IDD_Date_S'] ?? null);
+        $idLicenseEnd = $normalizeDate($_POST['emp_IDD_Date_F'] ?? null);
         $idPassport = trim($_POST['emp_passport'] ?? $_POST['emp_passportID'] ?? '');
-        $idPassportStart = $_POST['emp_passport_Date_S'] ?? $_POST['emp_Passport_ID_Date_S'] ?? null;
-        $idPassportEnd = $_POST['emp_passport_Date_F'] ?? $_POST['emp_passport_Cer_ID_Date_F'] ?? null;
+        $idPassportStart = $normalizeDate($_POST['emp_passport_Date_S'] ?? $_POST['emp_Passport_ID_Date_S'] ?? null);
+        $idPassportEnd = $normalizeDate($_POST['emp_passport_Date_F'] ?? $_POST['emp_passport_Cer_ID_Date_F'] ?? null);
         $idHealth = trim($_POST['emp_health_id'] ?? $_POST['emp_CerID'] ?? '');
-        $idHealthStart = $_POST['emp_health_Date_S'] ?? $_POST['emp_Cer_ID_Date_S'] ?? null;
-        $idHealthEnd = $_POST['emp_health_Date_F'] ?? $_POST['emp_Cer_ID_Date_F'] ?? null;
+        $idHealthStart = $normalizeDate($_POST['emp_health_Date_S'] ?? $_POST['emp_Cer_ID_Date_S'] ?? null);
+        $idHealthEnd = $normalizeDate($_POST['emp_health_Date_F'] ?? $_POST['emp_Cer_ID_Date_F'] ?? null);
 
         $createdBy = $_SESSION['user']['UserID'] ?? $user;
 
