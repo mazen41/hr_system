@@ -5517,7 +5517,7 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
 
             switch ($value) {
                 case 1: // Employees
-                    $sql = "SELECT ID as id, CONCAT(FirstName, ' ', LastName) as name FROM tblemployees WHERE BranchID = ?";
+                    $sql = "SELECT UserID as id, CONCAT(FirstName, ' ', LastName) as name FROM tblusers WHERE BranchID = ? AND isemp = 1";
                     $params = [$branchId];
                     break;
                 case 2: // Groups
