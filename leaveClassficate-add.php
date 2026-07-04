@@ -304,10 +304,10 @@ $('#branchs_list').change(function() {
 });
 
 $('#for_what').change(function() {
-        var selectedValue = $(this).val(); 
-        if(selectedValue==2 || selectedValue==3 || selectedValue==4 || selectedValue==5)
+        var selectedValue = $(this).val();
+        if(selectedValue==1 || selectedValue==2 || selectedValue==3 || selectedValue==4 || selectedValue==5)
         {
-          
+
           $("#ess").show();
         }
         else
