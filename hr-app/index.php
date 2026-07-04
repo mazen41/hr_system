@@ -4966,13 +4966,16 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
                 $branches = is_array($branchIds) ? $branchIds : [$branchIds];
                 $lastId = 0;
                 foreach ($branches as $bid) {
-                    $stmt = $connect_pdo->prepare("INSERT INTO holidays (Name, BranchID, Start_date, End_date, CreatedBy, CreatedDate) VALUES (?, ?, ?, ?, ?, CURDATE())");
-                    $stmt->execute([$name, intval($bid), $startDate, $endDate, $userId]);
-                    $lastId = $connect_pdo->lastInsertId();
-                    $holidayId = $connect_pdo->lastInsertId();
+                    // Get next Holiday_ID
+                    $maxIdStmt = $connect_pdo->prepare("SELECT MAX(Holiday_ID) as max_id FROM holidays");
+                    $maxIdStmt->execute();
+                    $maxIdRow = $maxIdStmt->fetch();
+                    $nextHolidayId = ($maxIdRow['max_id'] ?? 0) + 1;
                     
-                    // Update holiday with Holiday_ID
-                    $connect_pdo->prepare("UPDATE holidays SET Holiday_ID = ? WHERE Id = ?")->execute([$holidayId, $lastId]);
+                    $stmt = $connect_pdo->prepare("INSERT INTO holidays (Holiday_ID, Name, BranchID, Start_date, End_date, CreatedBy, CreatedDate) VALUES (?, ?, ?, ?, ?, ?, CURDATE())");
+                    $stmt->execute([$nextHolidayId, $name, intval($bid), $startDate, $endDate, $userId]);
+                    $lastId = $connect_pdo->lastInsertId();
+                    $holidayId = $nextHolidayId;
                     
                     // Insert holiday days
                     if (!empty($tableData) && is_array($tableData)) {
@@ -5449,8 +5452,8 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
                 $branches = is_array($branchIds) ? $branchIds : [$branchIds];
                 $shiftId = 0;
                 foreach ($branches as $bid) {
-                    $stmt = $connect_pdo->prepare("INSERT INTO tbshift (ShiftName, BranchID, NumFootprint, ShiftState, ShiftStartTime, ShiftEndTime, CreatedBy, CreatedDate) VALUES (?, ?, ?, ?, ?, ?, ?, CURDATE())");
-                    $stmt->execute([$name, intval($bid), $numFingerprints, $stopped, $startTimes[0] ?? '08:00', $endTimes[0] ?? '16:00', $userId]);
+                    $stmt = $connect_pdo->prepare("INSERT INTO tbshift (ShiftName, BranchID, NumFootprint, ShiftState, ShiftStartTime, ShiftEndTime, TotalworkHour, CreatedBy, CreatedDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURDATE())");
+                    $stmt->execute([$name, intval($bid), $numFingerprints, $stopped, $startTimes[0] ?? '08:00', $endTimes[0] ?? '16:00', '08:00', $userId]);
                     $shiftId = $connect_pdo->lastInsertId();
 
                     // Insert shift settings
@@ -5501,7 +5504,62 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
         break;
 
     // ============================================================
-// RESIGNATION â€” ADD/UPDATE
+// INCENTIVE INFO — Get data for dynamic field selection
+// ============================================================
+    case 'incentive-info':
+        $value = intval($_POST['value'] ?? 0);
+        $branchId = intval($_POST['BranchID'] ?? 0);
+
+        try {
+            $data = [];
+            $sql = '';
+            $params = [];
+
+            switch ($value) {
+                case 1: // Employees
+                    $sql = "SELECT ID as id, CONCAT(FirstName, ' ', LastName) as name FROM tblemployees WHERE BranchID = ?";
+                    $params = [$branchId];
+                    break;
+                case 2: // Groups
+                    $sql = "SELECT Id as id, Name as name FROM tblgroup WHERE BranchID = ?";
+                    $params = [$branchId];
+                    break;
+                case 3: // Job Grades
+                    $sql = "SELECT Id as id, Name as name FROM tbljobgrade WHERE BranchID = ?";
+                    $params = [$branchId];
+                    break;
+                case 4: // Sections
+                    $sql = "SELECT Id as id, Name as name FROM tblsection WHERE BranchID = ?";
+                    $params = [$branchId];
+                    break;
+                case 5: // Job Titles
+                    $sql = "SELECT Id as id, Name as name FROM tbljobtitle WHERE BranchID = ?";
+                    $params = [$branchId];
+                    break;
+                default:
+                    $result = false;
+                    $msg = 'قيمة غير صالحة';
+                    break;
+            }
+
+            if (!empty($sql)) {
+                $stmt = $connect_pdo->prepare($sql);
+                $stmt->execute($params);
+                $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                foreach ($rows as $row) {
+                    $data[] = ['data' => $row];
+                }
+                $result = true;
+            }
+        } catch (PDOException $e) {
+            $result = false;
+            $msg = 'خطأ في قاعدة البيانات: ' . $e->getMessage();
+        }
+        break;
+
+    // ============================================================
+// RESIGNATION — ADD/UPDATE
 // ============================================================
     case 'resignation-add':
     case 'resignation-add-add':
