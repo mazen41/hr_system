@@ -4674,7 +4674,7 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
         $parentId = !empty($_POST['ParentID']) ? intval($_POST['ParentID']) : (!empty($_POST['select_section']) ? intval($_POST['select_section']) : null);
 
         // Set CreatedBy and CreatedDate
-        $createdBy = $_SESSION['user_id'] ?? 0; // CHANGE THIS to your actual session variable
+        $createdBy = $_SESSION['user']['id'] ?? $user;
         $createdDate = date('Y-m-d H:i:s'); // Current date and time
 
         if (empty($name)) {
@@ -4773,8 +4773,9 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
         }
 
         try {
+            $userId = $_SESSION['user']['id'] ?? $user;
             if ($id > 0) {
-                $stmt = $connect_pdo->prepare("UPDATE tbljobgrade SET Name = ?, BranchID = ?, Description = ? WHERE Id = ?");
+                $stmt = $connect_pdo->prepare("UPDATE tbljobgrade SET Name = ?, BranchID = ?, Description = ?, LastUpdateDate = CURRENT_TIMESTAMP WHERE Id = ?");
                 $stmt->execute([$name, $branchId, $description, $id]);
                 $data = ['id' => $id];
                 $msg = 'تم تحديث الدرجة الوظيفية بنجاح';
@@ -4783,8 +4784,8 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
                 $branches = is_array($branchIds) ? $branchIds : [$branchIds];
                 $lastId = 0;
                 foreach ($branches as $bid) {
-                    $stmt = $connect_pdo->prepare("INSERT INTO tbljobgrade (Name, BranchID, Description) VALUES (?, ?, ?)");
-                    $stmt->execute([$name, intval($bid), $description]);
+                    $stmt = $connect_pdo->prepare("INSERT INTO tbljobgrade (Name, BranchID, Description, CreatedBy, CreatedDate) VALUES (?, ?, ?, ?, CURDATE())");
+                    $stmt->execute([$name, intval($bid), $description, $userId]);
                     $lastId = $connect_pdo->lastInsertId();
                 }
                 $data = ['id' => $lastId];
@@ -4820,8 +4821,9 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
         }
 
         try {
+            $userId = $_SESSION['user']['id'] ?? $user;
             if ($id > 0) {
-                $stmt = $connect_pdo->prepare("UPDATE tblgroup SET Name = ?, BranchID = ?, LeaderGroup = ?, Description = ? WHERE Id = ?");
+                $stmt = $connect_pdo->prepare("UPDATE tblgroup SET Name = ?, BranchID = ?, LeaderGroup = ?, Description = ?, LastUpdateDate = CURRENT_TIMESTAMP WHERE Id = ?");
                 $stmt->execute([$name, $branchId, $leaderGroup, $description, $id]);
                 $data = ['id' => $id];
                 $msg = 'تم تحديث المجموعة بنجاح';
@@ -4830,8 +4832,8 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
                 $branches = is_array($branchIds) ? $branchIds : [$branchIds];
                 $lastId = 0;
                 foreach ($branches as $bid) {
-                    $stmt = $connect_pdo->prepare("INSERT INTO tblgroup (Name, BranchID, LeaderGroup, Description) VALUES (?, ?, ?, ?)");
-                    $stmt->execute([$name, intval($bid), $leaderGroup, $description]);
+                    $stmt = $connect_pdo->prepare("INSERT INTO tblgroup (Name, BranchID, LeaderGroup, Description, CreatedBy, CreatedDate) VALUES (?, ?, ?, ?, ?, CURDATE())");
+                    $stmt->execute([$name, intval($bid), $leaderGroup, $description, $userId]);
                     $lastId = $connect_pdo->lastInsertId();
                 }
                 $data = ['id' => $lastId];
@@ -4866,7 +4868,7 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
         $note = trim($_POST['note'] ?? '');
 
         // Set CreatedBy and CreatedDate
-        $createdBy = $_SESSION['user_id'] ?? 0; // CHANGE THIS to your actual session variable
+        $createdBy = $_SESSION['user']['id'] ?? $user;
         $createdDate = date('Y-m-d H:i:s'); // Current date and time
 
         if (empty($name)) {
@@ -4931,9 +4933,32 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
         }
 
         try {
+            $userId = $_SESSION['user']['id'] ?? $user;
+            $tableData = json_decode($_POST['tableData'] ?? '[]', true);
+            
             if ($id > 0) {
-                $stmt = $connect_pdo->prepare("UPDATE holidays SET Name = ?, BranchID = ?, Start_date = ?, End_date = ? WHERE Id = ?");
+                $stmt = $connect_pdo->prepare("UPDATE holidays SET Name = ?, BranchID = ?, Start_date = ?, End_date = ?, LastUpdateDate = CURRENT_TIMESTAMP WHERE Id = ?");
                 $stmt->execute([$name, $branchId, $startDate, $endDate, $id]);
+                
+                // Get Holiday_ID from database
+                $holidayStmt = $connect_pdo->prepare("SELECT Holiday_ID FROM holidays WHERE Id = ?");
+                $holidayStmt->execute([$id]);
+                $holidayRow = $holidayStmt->fetch();
+                $holidayId = $holidayRow['Holiday_ID'] ?? 0;
+                
+                // Delete old holiday days and insert new ones
+                if ($holidayId > 0) {
+                    $connect_pdo->prepare("DELETE FROM holidays_day WHERE HolidayID = ?")->execute([$holidayId]);
+                }
+                
+                // Insert holiday days
+                if (!empty($tableData) && is_array($tableData)) {
+                    $dayStmt = $connect_pdo->prepare("INSERT INTO holidays_day (HolidayID, Date, Description) VALUES (?, ?, ?)");
+                    foreach ($tableData as $day) {
+                        $dayStmt->execute([$holidayId, $day['date'], $day['description']]);
+                    }
+                }
+                
                 $data = ['id' => $id];
                 $msg = 'تم تحديث العطلة بنجاح';
             } else {
@@ -4941,9 +4966,21 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
                 $branches = is_array($branchIds) ? $branchIds : [$branchIds];
                 $lastId = 0;
                 foreach ($branches as $bid) {
-                    $stmt = $connect_pdo->prepare("INSERT INTO holidays (Name, BranchID, Start_date, End_date) VALUES (?, ?, ?, ?)");
-                    $stmt->execute([$name, intval($bid), $startDate, $endDate]);
+                    $stmt = $connect_pdo->prepare("INSERT INTO holidays (Name, BranchID, Start_date, End_date, CreatedBy, CreatedDate) VALUES (?, ?, ?, ?, ?, CURDATE())");
+                    $stmt->execute([$name, intval($bid), $startDate, $endDate, $userId]);
                     $lastId = $connect_pdo->lastInsertId();
+                    $holidayId = $connect_pdo->lastInsertId();
+                    
+                    // Update holiday with Holiday_ID
+                    $connect_pdo->prepare("UPDATE holidays SET Holiday_ID = ? WHERE Id = ?")->execute([$holidayId, $lastId]);
+                    
+                    // Insert holiday days
+                    if (!empty($tableData) && is_array($tableData)) {
+                        $dayStmt = $connect_pdo->prepare("INSERT INTO holidays_day (HolidayID, Date, Description) VALUES (?, ?, ?)");
+                        foreach ($tableData as $day) {
+                            $dayStmt->execute([$holidayId, $day['date'], $day['description']]);
+                        }
+                    }
                 }
                 $data = ['id' => $lastId];
                 $msg = 'تم إضافة العطلة بنجاح';
@@ -4976,8 +5013,9 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
         }
 
         try {
+            $userId = $_SESSION['user']['id'] ?? $user;
             if ($id > 0) {
-                $stmt = $connect_pdo->prepare("UPDATE tblemploymenttype SET Name = ?, BranchID = ? WHERE Id = ?");
+                $stmt = $connect_pdo->prepare("UPDATE tblemploymenttype SET Name = ?, BranchID = ?, LastUpdateDate = CURRENT_TIMESTAMP WHERE Id = ?");
                 $stmt->execute([$name, $branchId, $id]);
                 $data = ['id' => $id];
                 $msg = 'تم تحديث نوع التوظيف بنجاح';
@@ -4986,8 +5024,8 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
                 $branches = is_array($branchIds) ? $branchIds : [$branchIds];
                 $lastId = 0;
                 foreach ($branches as $bid) {
-                    $stmt = $connect_pdo->prepare("INSERT INTO tblemploymenttype (Name, BranchID) VALUES (?, ?)");
-                    $stmt->execute([$name, intval($bid)]);
+                    $stmt = $connect_pdo->prepare("INSERT INTO tblemploymenttype (Name, BranchID, CreatedBy, CreatedDate) VALUES (?, ?, ?, CURDATE())");
+                    $stmt->execute([$name, intval($bid), $userId]);
                     $lastId = $connect_pdo->lastInsertId();
                 }
                 $data = ['id' => $lastId];
@@ -5120,7 +5158,7 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
         $type = intval($_POST['type'] ?? 1);
         $forWhat = intval($_POST['for_what'] ?? 0);
         $employer = is_array($_POST['employer'] ?? null) ? implode(',', $_POST['employer']) : ($_POST['employer'] ?? '');
-        $amount = trim($_POST['amount'] ?? '0');
+        $amount = !empty($_POST['amount']) ? (float)$_POST['amount'] : 0;
         $amountType = $_POST['AmountType'] ?? 'amount';
         $note = trim($_POST['note'] ?? '');
         $stopped = isset($_POST['stopped']) ? 1 : 0;
@@ -5356,7 +5394,7 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
 
             if ($id > 0) {
                 // Update shift
-                $stmt = $connect_pdo->prepare("UPDATE tbshift SET ShiftName = ?, BranchID = ?, NumFootprint = ?, ShiftState = ? WHERE ShiftID = ?");
+                $stmt = $connect_pdo->prepare("UPDATE tbshift SET ShiftName = ?, BranchID = ?, NumFootprint = ?, ShiftState = ?, LastUpdateDate = CURRENT_TIMESTAMP WHERE ShiftID = ?");
                 $stmt->execute([$name, $branchId, $numFingerprints, $stopped, $id]);
                 $shiftId = $id;
 
@@ -5411,8 +5449,8 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
                 $branches = is_array($branchIds) ? $branchIds : [$branchIds];
                 $shiftId = 0;
                 foreach ($branches as $bid) {
-                    $stmt = $connect_pdo->prepare("INSERT INTO tbshift (ShiftName, BranchID, NumFootprint, ShiftState, CreatedBy, CreatedDate) VALUES (?, ?, ?, ?, ?, CURDATE())");
-                    $stmt->execute([$name, intval($bid), $numFingerprints, $stopped, $userId]);
+                    $stmt = $connect_pdo->prepare("INSERT INTO tbshift (ShiftName, BranchID, NumFootprint, ShiftState, ShiftStartTime, ShiftEndTime, CreatedBy, CreatedDate) VALUES (?, ?, ?, ?, ?, ?, ?, CURDATE())");
+                    $stmt->execute([$name, intval($bid), $numFingerprints, $stopped, $startTimes[0] ?? '08:00', $endTimes[0] ?? '16:00', $userId]);
                     $shiftId = $connect_pdo->lastInsertId();
 
                     // Insert shift settings
