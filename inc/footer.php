@@ -269,7 +269,15 @@ $(document).ready(function() {
     }
     // Bootstrap Select
     if($.fn.selectpicker){
-        $('.selectpicker').selectpicker();
+        $('.selectpicker').selectpicker({ container: 'body' });
+        $(document).on('shown.bs.select', '.selectpicker', function () {
+            var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            var $search = $('.bootstrap-select.show .bs-searchbox input:visible').last();
+            if ($search.length) {
+                $search.trigger('focus');
+                window.scrollTo(0, scrollTop);
+            }
+        });
     }
 
     if ($.validator && $.validator.messages) {

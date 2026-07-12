@@ -25,12 +25,21 @@ include_once('inc/header.php');
     }
 
     .content {
-        padding-right: 0 !important;
+        padding: 0 1.5rem 1.5rem !important;
+    }
+
+    .content-header.page-nav {
+        margin: 0 1.5rem 1rem;
     }
 
     .container-fluid {
-        padding-right: 15px !important;
-        padding-left: 15px !important;
+        padding-right: 20px !important;
+        padding-left: 20px !important;
+    }
+
+    #suppliers-containr {
+        margin-top: .75rem;
+        border-radius: 10px;
     }
 </style>
 <div class="content-header page-nav">

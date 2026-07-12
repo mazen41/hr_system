@@ -43,3 +43,17 @@
 .ess-form-card-enhanced {
     height: auto !important;
 }
+
+/* Keep validation/toast messages above fixed sidebars and dropdown overlays. */
+#toast-container,
+.toast,
+.swal2-container,
+.modal,
+.modal-backdrop,
+.alert.alert-dismissible {
+  z-index: 2050 !important;
+}
+
+.bootstrap-select .dropdown-menu {
+  z-index: 2040 !important;
+}

@@ -377,6 +377,14 @@ class LeavePolicyManager {
             'applies_to_job_titles', 'applies_to_branches', 'is_active'
         ];
         
+        if (!empty($data['is_active'])) {
+            $activeStmt = $this->pdo->prepare("SELECT id FROM leave_policies WHERE is_active = 1" . ($id ? " AND id <> ?" : "") . " LIMIT 1");
+            $activeStmt->execute($id ? [$id] : []);
+            if ($activeStmt->fetchColumn()) {
+                throw new RuntimeException('Only one leave policy can be active. Please disable the currently active policy before activating another.');
+            }
+        }
+
         $values = [];
         $params = [];
         
