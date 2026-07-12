@@ -114,10 +114,10 @@ switch ($action) {
                     ]);
                 } else {
                     // Create new address
-                    $stmt = $connect_pdo->prepare("INSERT INTO tbladdress 
-                        (AddressType, Street, Block, City, Building, Phone, Mobile, ZipCode, Email, VatNumber, VatGNumber, IdentityType, IdentityDetail, Latitude, Longitude)
-                        VALUES ('BRANCH', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                    $stmt->execute([$street, $block, $city, $building, $phone, $mobile, $zip, $email, $vat, $vatG, $idType ?: null, $idNo, $lat, $lng]);
+                    $stmt = $connect_pdo->prepare("INSERT INTO tbladdress
+                        (AddressTitle, AddressType, Street, Block, City, Building, Phone, Mobile, ZipCode, Email, VatNumber, VatGNumber, IdentityType, IdentityDetail, Latitude, Longitude)
+                        VALUES (?, 'BRANCH', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                    $stmt->execute([$branchName . ' Address', $street, $block, $city, $building, $phone, $mobile, $zip, $email, $vat, $vatG, $idType ?: null, $idNo, $lat, $lng]);
                     $addressId = $connect_pdo->lastInsertId();
 
                     // Link address to branch
@@ -138,10 +138,10 @@ switch ($action) {
                 }
 
                 // Create address first
-                $stmt = $connect_pdo->prepare("INSERT INTO tbladdress 
-                    (AddressType, Street, Block, City, Building, Phone, Mobile, ZipCode, Email, VatNumber, VatGNumber, IdentityType, IdentityDetail, Latitude, Longitude)
-                    VALUES ('BRANCH', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                $stmt->execute([$street, $block, $city, $building, $phone, $mobile, $zip, $email, $vat, $vatG, $idType ?: null, $idNo, $lat, $lng]);
+                $stmt = $connect_pdo->prepare("INSERT INTO tbladdress
+                    (AddressTitle, AddressType, Street, Block, City, Building, Phone, Mobile, ZipCode, Email, VatNumber, VatGNumber, IdentityType, IdentityDetail, Latitude, Longitude)
+                    VALUES (?, 'BRANCH', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$branchName . ' Address', $street, $block, $city, $building, $phone, $mobile, $zip, $email, $vat, $vatG, $idType ?: null, $idNo, $lat, $lng]);
                 $addressId = $connect_pdo->lastInsertId();
 
                 // Create branch
