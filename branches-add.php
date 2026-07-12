@@ -572,14 +572,15 @@ include_once('inc/footer.php');
 						$('#preloading').show();
 					},
 					success: function (data) {
-						$('#preloading').hide();
 						if (data.result) {
 							toastr.success(data.msg);
+							$('#preloading').hide();
 							if (data.id > 0) {
-								window.location.href = 'branches-view?id=' + data.id;
+								window.location.href = 'branches-list';
 							}
 						} else {
 							toastr.error(data.msg);
+							$('#preloading').hide();
 						}
 					}
 				});
