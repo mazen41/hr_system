@@ -738,6 +738,10 @@ console.log("admin-leave-policies.php script block started."); // Debug log
 
 // Define globally to be accessible from inline onclicks
 window.togglePolicy = function(id, active) {
+    if (active == 1 && $('.policy-badge.active').length > 0) {
+        toastr.warning('يمكن تفعيل سياسة إجازات واحدة فقط. يرجى تعطيل السياسة النشطة حالياً قبل تفعيل سياسة أخرى.');
+        return;
+    }
     console.log("togglePolicy called for ID:", id, "Active status:", active); // Debug log
     $.post('hr-app/index.php?action=toggle-leave-policy', { id: id, is_active: active }, function(data) {
         if(typeof data === 'string') {
@@ -927,6 +931,10 @@ $(document).ready(function() {
     $('#policyForm').on('submit', function(e) { // Changed to .on('submit')
         e.preventDefault();
         console.log("policyForm submitted via AJAX!"); // Debug log
+        if ($('input[name="is_active"]').is(':checked') && $('.policy-badge.active').length > 0 && !$('#policy_id').val()) {
+            toastr.warning('يمكن تفعيل سياسة إجازات واحدة فقط. يرجى تعطيل السياسة النشطة حالياً قبل تفعيل سياسة أخرى.');
+            return;
+        }
         var formData = $(this).serialize();
         console.log("Form Data: ", formData); // Debug log form data
         

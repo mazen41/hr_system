@@ -682,7 +682,7 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
             if ($certCount > 0 && !empty($r['first_cert_path'])) {
                 $certLink = '<a href="' . htmlspecialchars($r['first_cert_path']) . '" target="_blank" class="btn btn-xs btn-outline-secondary mt-1">عرض الملف</a>';
             } else {
-                $certLink = '<a href="/emp-info?id=' . $r['UserID'] . '#certificates" class="btn btn-xs btn-outline-secondary mt-1">عرض الملف</a>';
+                $certLink = '<button type="button" class="btn btn-xs btn-outline-warning mt-1" disabled>لا يوجد ملف</button>';
             }
             
             $docsInfo = '
@@ -4146,7 +4146,15 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
         $forWhat = intval($_POST['for_what'] ?? 1);
         $employer = is_array($_POST['employer'] ?? null) ? implode(',', $_POST['employer']) : ($_POST['employer'] ?? '');
         $extinsion = is_array($_POST['extinsion'] ?? null) ? implode(',', $_POST['extinsion']) : ($_POST['extinsion'] ?? '');
-        $dueDate = $_POST['Due_date'] ?? null;
+        $dueDate = trim($_POST['Due_date'] ?? '');
+        if ($benefitType === 1 && $dueDate === '') {
+            $dueDate = date('Y-m-t');
+        }
+        if ($dueDate === '') {
+            $result = false;
+            $msg = 'تاريخ الاستحقاق مطلوب';
+            break;
+        }
         $isDraft = intval($_POST['isdraft'] ?? 0);
         $monthly = isset($_POST['monthly']) ? 1 : 0;
         $userId = $_SESSION['user']['id'] ?? $user;
@@ -4214,7 +4222,8 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
             }
         } catch (PDOException $e) {
             $result = false;
-            $msg = 'خطأ في قاعدة البيانات: ' . $e->getMessage();
+            error_log('Benefits-add DB error: ' . $e->getMessage());
+            $msg = 'حدث خطأ أثناء حفظ التعويض. يرجى التحقق من البيانات والمحاولة مرة أخرى';
         }
         break;
 
@@ -4284,7 +4293,16 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
         $forWhat = intval($_POST['for_what'] ?? 1);
         $employer = is_array($_POST['employer'] ?? null) ? implode(',', $_POST['employer']) : ($_POST['employer'] ?? '');
         $extinsion = is_array($_POST['extinsion'] ?? null) ? implode(',', $_POST['extinsion']) : ($_POST['extinsion'] ?? '');
-        $dueDate = $_POST['Due_date'] ?? null;
+        $dueDate = trim($_POST['Due_date'] ?? '');
+        if ($dueDate === '') {
+            $result = false;
+            $msg = 'تاريخ الاستحقاق مطلوب';
+            break;
+        }
+        $dueDate = str_replace('T', ' ', $dueDate);
+        if (preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/', $dueDate)) {
+            $dueDate .= ':00';
+        }
         // Convert date from DD/MM/YYYY to YYYY-MM-DD if needed
         if ($dueDate && preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $dueDate)) {
             $dateParts = explode('/', $dueDate);
@@ -4348,7 +4366,8 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
             }
         } catch (PDOException $e) {
             $result = false;
-            $msg = 'خطأ في قاعدة البيانات: ' . $e->getMessage();
+            error_log('deductions-add DB error: ' . $e->getMessage());
+            $msg = 'حدث خطأ أثناء حفظ الخصم. يرجى التحقق من البيانات والمحاولة مرة أخرى';
         }
         break;
 
@@ -4420,7 +4439,15 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
         $forWhat = intval($_POST['for_what'] ?? 1);
         $employer = is_array($_POST['employer'] ?? null) ? implode(',', $_POST['employer']) : ($_POST['employer'] ?? '');
         $extinsion = is_array($_POST['extinsion'] ?? null) ? implode(',', $_POST['extinsion']) : ($_POST['extinsion'] ?? '');
-        $dueDate = $_POST['Due_date'] ?? null;
+        $dueDate = trim($_POST['Due_date'] ?? '');
+        if ($incentiveType == 1 && $dueDate === '') {
+            $dueDate = date('Y-m-t');
+        }
+        if ($dueDate === '') {
+            $result = false;
+            $msg = 'تاريخ الاستحقاق مطلوب';
+            break;
+        }
         $isDraft = intval($_POST['isdraft'] ?? 0);
         $monthly = isset($_POST['monthly']) ? 1 : 0;
         $userId = $_SESSION['user']['id'] ?? $user;
@@ -5004,7 +5031,8 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
             }
         } catch (PDOException $e) {
             $result = false;
-            $msg = 'خطأ في قاعدة البيانات: ' . $e->getMessage();
+            error_log('holidays-add DB error: ' . $e->getMessage());
+            $msg = 'حدث خطأ أثناء حفظ العطلة. يرجى التحقق من البيانات والمحاولة مرة أخرى';
         }
         break;
 
@@ -5918,6 +5946,28 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
             $msg = 'الفرع مطلوب';
             break;
         }
+        if ($email !== null && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $result = false;
+            $msg = 'صيغة البريد الإلكتروني غير صحيحة';
+            break;
+        }
+        $duplicateChecks = [
+            ['value' => $email, 'column' => 'UserEmail', 'message' => 'البريد الإلكتروني مسجل بالفعل'],
+            ['value' => $phone, 'column' => 'Phone', 'message' => 'رقم الهاتف مسجل بالفعل'],
+            ['value' => $idH, 'column' => 'Id_h', 'message' => 'رقم الهوية مسجل بالفعل'],
+        ];
+        foreach ($duplicateChecks as $check) {
+            if ($check['value'] === null || $check['value'] === '') {
+                continue;
+            }
+            $dupStmt = $connect_pdo->prepare("SELECT UserID FROM tblusers WHERE {$check['column']} = ? AND UserID <> ? LIMIT 1");
+            $dupStmt->execute([$check['value'], $id]);
+            if ($dupStmt->fetchColumn()) {
+                $result = false;
+                $msg = $check['message'];
+                break 2;
+            }
+        }
 
         // --- التحقق من نطاق الراتب الخاص بالقسم (فقط إذا كان موظفاً) ---
         $salaryClean = str_replace([',', ' '], '', $salary);
@@ -6134,15 +6184,23 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
             function uploadEmployeeFile($inputName, $dirName, $prefix)
             {
                 if (!empty($_FILES[$inputName]['name'])) {
+                    if ($_FILES[$inputName]['error'] !== UPLOAD_ERR_OK) {
+                        throw new RuntimeException('Invalid uploaded file.');
+                    }
+                    $allowedExt = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf'];
+                    $ext = strtolower(pathinfo($_FILES[$inputName]['name'], PATHINFO_EXTENSION));
+                    if (!in_array($ext, $allowedExt, true)) {
+                        throw new RuntimeException('Invalid uploaded file.');
+                    }
                     $uploadDir = __DIR__ . '/../uploads/' . $dirName . '/';
                     if (!is_dir($uploadDir)) {
                         mkdir($uploadDir, 0755, true);
                     }
-                    $ext = pathinfo($_FILES[$inputName]['name'], PATHINFO_EXTENSION);
                     $fileName = uniqid($prefix) . '_' . time() . '.' . $ext;
                     if (move_uploaded_file($_FILES[$inputName]['tmp_name'], $uploadDir . $fileName)) {
                         return 'uploads/' . $dirName . '/' . $fileName;
                     }
+                    throw new RuntimeException('Invalid uploaded file.');
                 }
                 return null;
             }
@@ -6223,10 +6281,16 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
             $data = ['emp_id' => $empId];
             $msg = $id > 0 ? 'تم تحديث البيانات بنجاح' : 'تم إضافة السجل بنجاح';
 
+        } catch (RuntimeException $e) {
+            $connect_pdo->rollBack();
+            error_log('employer-add validation error: ' . $e->getMessage());
+            $result = false;
+            $msg = $e->getMessage() === 'Invalid uploaded file.' ? 'الملف المرفوع غير صالح' : 'حدث خطأ أثناء حفظ البيانات. يرجى المحاولة مرة أخرى';
         } catch (PDOException $e) {
             $connect_pdo->rollBack();
             $result = false;
             
+            error_log('employer-add DB error: ' . $e->getMessage());
             // Convert MySQL errors to user-friendly messages
             $errorMessage = $e->getMessage();
             
@@ -8921,7 +8985,15 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
         $id = !empty($_POST['id']) ? (int) $_POST['id'] : null;
 
         $_POST['created_by'] = $user;
-        $savedId = $manager->savePolicy($_POST, $id);
+        try {
+            $savedId = $manager->savePolicy($_POST, $id);
+        } catch (RuntimeException $e) {
+            $result = false;
+            $msg = $e->getMessage() === 'Only one leave policy can be active. Please disable the currently active policy before activating another.'
+                ? 'يمكن تفعيل سياسة إجازات واحدة فقط. يرجى تعطيل السياسة النشطة حالياً قبل تفعيل سياسة أخرى.'
+                : 'حدث خطأ أثناء حفظ السياسة';
+            break;
+        }
 
         if ($savedId) {
             $data = ['id' => $savedId];
@@ -8948,6 +9020,15 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
         $id = (int) ($_POST['id'] ?? 0);
         $active = (int) ($_POST['is_active'] ?? 0);
 
+        if ($active === 1) {
+            $stmt = $connect_pdo->prepare("SELECT id FROM leave_policies WHERE is_active = 1 AND id <> ? LIMIT 1");
+            $stmt->execute([$id]);
+            if ($stmt->fetchColumn()) {
+                $result = false;
+                $msg = 'يمكن تفعيل سياسة إجازات واحدة فقط. يرجى تعطيل السياسة النشطة حالياً قبل تفعيل سياسة أخرى.';
+                break;
+            }
+        }
         $stmt = $connect_pdo->prepare("UPDATE leave_policies SET is_active = ? WHERE id = ?");
         $stmt->execute([$active, $id]);
         $msg = $active ? 'تم تفعيل السياسة' : 'تم تعطيل السياسة';

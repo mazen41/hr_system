@@ -188,7 +188,7 @@ $for_E = !empty($row['extionsion']) ? array_unique(explode ( ',', $row['extionsi
                               </div>
                               <div class="form-group col-md-4">
                               <label class="col-form-label required" for="Due_date">تاريخ الخصم</label>
-                              <input type="text" name="Due_date" class="form-control input-date"  placeholder="تاريخ الاستحقاق" id="Due_date" autocomplete="off" value="<?=(!empty($row['DueDate'])? $row['DueDate'] : '' )?>" required>
+                              <input type="datetime-local" name="Due_date" class="form-control"  placeholder="تاريخ الاستحقاق" id="Due_date" autocomplete="off" value="<?=(!empty($row['DueDate'])? date('Y-m-d\TH:i', strtotime($row['DueDate'])) : '' )?>" required>
                               </div>
                               
 						</div>
