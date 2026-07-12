@@ -310,8 +310,17 @@ $for_E = !empty($row['extionsion']) ? array_unique(explode ( ',', $row['extionsi
 
 
 <script>
-//, lng: 
+//, lng:
 
+// Initialize date picker
+$(document).ready(function(){
+    $('#Due_date').datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true,
+        todayHighlight: true,
+        language: 'ar'
+    });
+});
 
 
 //initMap(15.3387008,44.204032);

@@ -639,8 +639,8 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
         $cntS->execute($params);
         $total = (int) $cntS->fetchColumn();
 
-        $certSelect = $hasCertificatesTable ? ", COALESCE(cert.cert_count, 0) AS cert_count" : ", 0 AS cert_count";
-        $certJoin = $hasCertificatesTable ? " LEFT JOIN (SELECT UserID, COUNT(*) AS cert_count FROM user_cer GROUP BY UserID) cert ON cert.UserID = u.UserID " : "";
+        $certSelect = $hasCertificatesTable ? ", COALESCE(cert.cert_count, 0) AS cert_count, cert.first_cert_path" : ", 0 AS cert_count, NULL AS first_cert_path";
+        $certJoin = $hasCertificatesTable ? " LEFT JOIN (SELECT UserID, COUNT(*) AS cert_count, MIN(FilePath) AS first_cert_path FROM user_cer WHERE FilePath IS NOT NULL AND FilePath != '' GROUP BY UserID) cert ON cert.UserID = u.UserID " : "";
         $expSelect = $hasExperiencesTable ? ", COALESCE(exp.exp_count, 0) AS exp_count" : ", 0 AS exp_count";
         $expJoin = $hasExperiencesTable ? " LEFT JOIN (SELECT UserID, COUNT(*) AS exp_count FROM user_exper GROUP BY UserID) exp ON exp.UserID = u.UserID " : "";
 
@@ -676,14 +676,23 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
             }
             $certCount = (int) ($r['cert_count'] ?? 0);
             $expCount = (int) ($r['exp_count'] ?? 0);
+            
+            // Generate certificate link - if certificates exist and have files, link to first file, otherwise link to emp-info page
+            $certLink = '';
+            if ($certCount > 0 && !empty($r['first_cert_path'])) {
+                $certLink = '<a href="' . htmlspecialchars($r['first_cert_path']) . '" target="_blank" class="btn btn-xs btn-outline-secondary mt-1">عرض الملف</a>';
+            } else {
+                $certLink = '<a href="/emp-info?id=' . $r['UserID'] . '#certificates" class="btn btn-xs btn-outline-secondary mt-1">عرض الملف</a>';
+            }
+            
             $docsInfo = '
             <div class="d-flex flex-column">
                 <small class="text-muted">الشهادات: ' . $certCount . '</small>
                 <small class="text-muted">الخبرات: ' . $expCount . '</small>
-                <a href="/hr-app/emp-info?id=' . $r['UserID'] . '#certificates" class="btn btn-xs btn-outline-secondary mt-1">عرض الملف</a>
+                ' . $certLink . '
             </div>';
-            $actions = '<a href="/hr-app/emp-info?id=' . $r['UserID'] . '" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a> ';
-            $actions .= '<a href="/hr-app/employer-add?id=' . $r['UserID'] . '" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></a>';
+            $actions = '<a href="emp-info?id=' . $r['UserID'] . '" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a> ';
+            $actions .= '<a href="employer-add?id=' . $r['UserID'] . '" class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></a>';
 
             $formatted[] = [
                 $photo . $empName,
@@ -4276,6 +4285,11 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
         $employer = is_array($_POST['employer'] ?? null) ? implode(',', $_POST['employer']) : ($_POST['employer'] ?? '');
         $extinsion = is_array($_POST['extinsion'] ?? null) ? implode(',', $_POST['extinsion']) : ($_POST['extinsion'] ?? '');
         $dueDate = $_POST['Due_date'] ?? null;
+        // Convert date from DD/MM/YYYY to YYYY-MM-DD if needed
+        if ($dueDate && preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $dueDate)) {
+            $dateParts = explode('/', $dueDate);
+            $dueDate = $dateParts[2] . '-' . $dateParts[1] . '-' . $dateParts[0];
+        }
         $isDraft = intval($_POST['isdraft'] ?? 0);
         $userId = $_SESSION['user']['id'] ?? $user;
 
@@ -4972,7 +4986,7 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
                     $maxIdRow = $maxIdStmt->fetch();
                     $nextHolidayId = ($maxIdRow['max_id'] ?? 0) + 1;
                     
-                    $stmt = $connect_pdo->prepare("INSERT INTO holidays (Holiday_ID, Name, BranchID, Start_date, End_date, CreatedBy, CreatedDate) VALUES (?, ?, ?, ?, ?, ?, CURDATE())");
+                    $stmt = $connect_pdo->prepare("INSERT INTO holidays (Holiday_ID, Name, BranchID, Start_date, End_date, CreatedBy, CreatedDate) VALUES (?, ?, ?, ?, ?, ?, NOW())");
                     $stmt->execute([$nextHolidayId, $name, intval($bid), $startDate, $endDate, $userId]);
                     $lastId = $connect_pdo->lastInsertId();
                     $holidayId = $nextHolidayId;
@@ -6212,7 +6226,32 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
         } catch (PDOException $e) {
             $connect_pdo->rollBack();
             $result = false;
-            $msg = 'خطأ في قاعدة البيانات: ' . $e->getMessage();
+            
+            // Convert MySQL errors to user-friendly messages
+            $errorMessage = $e->getMessage();
+            
+            // Check for duplicate entry errors
+            if (strpos($errorMessage, 'Duplicate entry') !== false) {
+                if (strpos($errorMessage, 'UserEmail') !== false || strpos($errorMessage, 'email') !== false) {
+                    $msg = 'عذراً، هذا البريد الإلكتروني مسجل بالفعل في النظام';
+                } elseif (strpos($errorMessage, 'Phone') !== false) {
+                    $msg = 'عذراً، رقم الهاتف مسجل بالفعل في النظام';
+                } else {
+                    $msg = 'عذراً، هناك بيانات مكررة في النظام';
+                }
+            }
+            // Check for foreign key constraint errors
+            elseif (strpos($errorMessage, 'foreign key constraint') !== false) {
+                $msg = 'عذراً، لا يمكن الحفظ بسبب ارتباط البيانات بسجلات أخرى';
+            }
+            // Check for data too long errors
+            elseif (strpos($errorMessage, 'Data too long') !== false) {
+                $msg = 'عذراً، بعض البيانات طويلة جداً';
+            }
+            // Generic database error
+            else {
+                $msg = 'حدث خطأ أثناء حفظ البيانات. يرجى المحاولة مرة أخرى';
+            }
         }
         break;
     case 'applicants-list':

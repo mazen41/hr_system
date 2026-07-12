@@ -497,7 +497,7 @@ $(document).ready(function(){
         };
 
         $.ajax({
-            url: "hr-app/index.php?action=salary-disbursement",
+            url: "salary-disbursement.php",
             method: "POST", 
             data: dataToSend,
             dataType: "json", 
@@ -510,6 +510,10 @@ $(document).ready(function(){
                     toastr.error(data.msg);
                 }
                 $('.overlay').hide();
+            },
+            error: function(){
+                $('.overlay').hide();
+                toastr.error('حدث خطأ أثناء معالجة الطلب');
             }
         });
     });

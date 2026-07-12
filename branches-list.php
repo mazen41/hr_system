@@ -23,6 +23,15 @@ include_once('inc/header.php');
     .filter-advance {
         display: none
     }
+
+    .content {
+        padding-right: 0 !important;
+    }
+
+    .container-fluid {
+        padding-right: 15px !important;
+        padding-left: 15px !important;
+    }
 </style>
 <div class="content-header page-nav">
     <div class="container-fluid ">
