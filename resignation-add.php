@@ -2,17 +2,31 @@
 // Ensure this file is only accessed via POST requests
 ($_SERVER['REQUEST_METHOD'] == 'POST') ? "" : die('Invalid request method.');
 
-// Assuming $connect_pdo, $user, $branch, $today_date, $now_date, and sanitizingData function are available from your included files or global scope.
-// If not, you need to ensure they are defined or included here.
-// Example:
-// include_once('../../config/database.php'); // Adjust path as necessary for $connect_pdo
-// include_once('../../inc/functions.php'); // Adjust path as necessary for sanitizingData
-// session_start();
-// $user = $_SESSION['user']['id'] ?? 1; // Default user ID if not set
-// $branch = $_SESSION['user']['BranchID'] ?? 1; // Default branch ID if not set
-// $today_date = date('Y-m-d');
-// $now_date = date('Y-m-d H:i:s');
+// Bootstrap session/config/User/functions (this file is hit directly via AJAX,
+// not through index.php router, so nothing is loaded yet)
+if (session_status() === PHP_SESSION_NONE) {
+    ini_set('session.cookie_secure', '1');
+    ini_set('session.cookie_httponly', '1');
+    ini_set('session.cookie_samesite', 'Lax');
+    session_start();
+}
+require_once __DIR__ . '/inc/config.php';
+require_once __DIR__ . '/inc/User.php';
+require_once __DIR__ . '/inc/functions.php';
 
+header('Content-Type: application/json; charset=utf-8');
+
+if (empty($_SESSION['user_id'])) {
+    echo json_encode(['result' => false, 'msg' => 'انتهت الجلسة، الرجاء تسجيل الدخول مرة أخرى'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+$User = new User($connect_pdo);
+$User->loadFromSession();
+$user = $_SESSION['user_id'];
+$branch = $_SESSION['branch'] ?? ($_SESSION['user']['BranchID'] ?? null);
+$today_date = date('Y-m-d');
+$now_date = date('Y-m-d H:i:s');
 
 $result = true;
 $msg = '';

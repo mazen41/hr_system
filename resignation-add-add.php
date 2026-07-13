@@ -299,8 +299,8 @@ $(document).ready(function(){
                 data:form_data,
                 dataType:"json",
                 beforeSend:function(){
-                    // Show a preloading indicator
-                    $('body').append('<div id="preloading" style="display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.7); justify-content: center; align-items: center; z-index: 9999;"><img src="path/to/your/loading.gif" alt="Loading..."></div>'); // Replace path/to/your/loading.gif
+                    // Reuse the shared preloading overlay from the header instead of
+                    // creating a duplicate #preloading element (duplicate IDs broke hide/remove)
                     $('#preloading').show();
                 },
                 success:function(data){
@@ -313,11 +313,9 @@ $(document).ready(function(){
                         toastr.error(data.msg);
                     }
                     $('#preloading').hide();
-                    $('#preloading').remove(); // Clean up preloading div
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     $('#preloading').hide();
-                    $('#preloading').remove();
                     toastr.error('حدث خطأ أثناء الاتصال بالخادم: ' + textStatus);
                 }
             });
