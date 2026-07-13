@@ -286,11 +286,11 @@ $roles = rollsList($connect_pdo,$row['UserID']);
                        <div class="row">
                         <div class="form-group col-md-6">
                             <label class="col-form-label required" for="date_leave_start">تاريخ بداية الاجازة</label>
-                            <input type="text" name="date_leave_start" class="form-control input-date"  placeholder="تاريخ بدابة الاجازة" id="date_leave_start" autocomplete="off" value="<?=(!empty($row['leave_start_date'])? $row['leave_start_date'] : '' )?>" required>
+                            <input type="date" name="date_leave_start" class="form-control input-date"  placeholder="تاريخ بدابة الاجازة" id="date_leave_start" autocomplete="off" value="<?=(!empty($row['leave_start_date'])? $row['leave_start_date'] : '' )?>" required>
                         </div>
                         <div class="form-group col-md-6">
                             <label class="col-form-label required" for="date_leave_end">تاريخ انتهاء الاجازة</label>
-                            <input type="text" name="date_leave_end" class="form-control input-date"  placeholder="تاريخ انتهاء الاجازة" id="date_leave_end" autocomplete="off" value="<?=(!empty($row['leave_end_date'])? $row['leave_end_date'] : '' )?>" required>
+                            <input type="date" name="date_leave_end" class="form-control input-date"  placeholder="تاريخ انتهاء الاجازة" id="date_leave_end" autocomplete="off" value="<?=(!empty($row['leave_end_date'])? $row['leave_end_date'] : '' )?>" required>
                         </div>
 
 

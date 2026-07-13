@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $appid  = 'HR';
 // if(!isset($_GET['id'])){
 // 	echo'<script> location.replace("employer-list"); </script>';
@@ -31,6 +31,20 @@ function empInfoTableExists(PDO $pdo, string $tableName): bool
     $cache[$tableName] = $stmt ? (bool) $stmt->fetchColumn() : false;
 
     return $cache[$tableName];
+}
+
+function empInfoFileUrl(?string $path): string
+{
+    $path = trim((string) $path);
+    if ($path === '') { return ''; }
+    return preg_match('#^(https?:)?//#', $path) ? $path : ltrim($path, '/');
+}
+
+function empInfoFileLink(?string $path): string
+{
+    $url = empInfoFileUrl($path);
+    if ($url === '') { return ''; }
+    return '<a href="' . htmlspecialchars($url, ENT_QUOTES, 'UTF-8') . '" target="_blank" rel="noopener" class="btn btn-xs btn-outline-primary"><i class="fa fa-eye"></i> عرض الملف</a>';
 }
 
 function empInfoNormalizeCurrency(?string $currency): string
@@ -73,7 +87,7 @@ $parma = array( ':id'  => $id, );
 		,u.user_bank_name,u.user_account_bank,u.ohter_phone,u.HealthCondition,
 		u.Sex,u.marital_status,u.user_address,u.Id_h,u.start_date_h,u.end_date_h,u.path_h,u.Id_license,u.start_date_license,u.end_date_license,
 		u.path_license,u.Id_passport,u.start_date_passport,u.end_date_passport,u.path_passport,u.Id_health,u.start_date_health,
-		u.end_date_health,u.path_health		
+		u.end_date_health,u.path_health, u.path_residency, u.path_qualifications, u.path_experience, u.path_service_cert, u.path_police_clearance
         FROM tblusers u
         
 		 
@@ -317,6 +331,11 @@ if(!isset($struct)) $struct = [];
                                 <li class="nav-item">
                                     <a class="nav-link" id="experiences-tab" data-toggle="pill" href="#experiences" role="tab" aria-controls="experiences" aria-selected="false">
                                         <strong>الخبرات</strong>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="employee-attachments-tab" data-toggle="pill" href="#employee-attachments" role="tab" aria-controls="employee-attachments" aria-selected="false">
+                                        <strong>المرفقات</strong>
                                     </a>
                                 </li>
 
@@ -666,9 +685,7 @@ if(!isset($struct)) $struct = [];
                                              <td><?php echo  !empty($employee['start_date_h']) ?$employee['start_date_h'] :'لايوجد' ?></td>
                                              <td><?php echo  !empty($employee['end_date_h']) ?$employee['end_date_h'] :'لايوجد' ?></td>
                                               <td><?php if (!empty($employee['path_h'])){  ?>
-                                                    <a href="<?= $employee['path_h'] ?>" download>
-                                                        <i class="fa fa-download"></i>
-                                                    </a>
+                                                    <?= empInfoFileLink($employee['path_h'] ?? '') ?>
                                                 <?php } ?> </td>
                                               <?php endif; ?>
                                                 <?php   if(!empty($employee['Id_license']) || !empty($employee['start_date_license']) || !empty($employee['end_date_license']) || !empty($employee['path_license']) ):  ?>
@@ -677,9 +694,7 @@ if(!isset($struct)) $struct = [];
                                             <td><?php echo  !empty($employee['start_date_license']) ?$employee['start_date_license'] :'لايوجد' ?></td>
                                              <td><?php echo  !empty($employee['end_date_license']) ?$employee['end_date_license'] :'لايوجد' ?></td>
                                              <td><?php if (!empty($employee['path_license'])){  ?>
-                                                    <a href="<?= $employee['path_license'] ?>" download>
-                                                        <i class="fa fa-download"></i>
-                                                    </a>
+                                                    <?= empInfoFileLink($employee['path_license'] ?? '') ?>
                                                 <?php } ?></td>
                                
                                                 <?php endif; ?>
@@ -689,9 +704,7 @@ if(!isset($struct)) $struct = [];
                                              <td><?php echo  !empty($employee['start_date_passport']) ?$employee['start_date_passport'] :'لايوجد' ?></td>
                                              <td><?php echo  !empty($employee['end_date_passport']) ?$employee['end_date_passport'] :'لايوجد' ?></td>
                                              <td><?php if (!empty($employee['path_passport'])){  ?>
-                                                    <a href="<?= $employee['path_passport'] ?>" download>
-                                                        <i class="fa fa-download"></i>
-                                                    </a>
+                                                    <?= empInfoFileLink($employee['path_passport'] ?? '') ?>
                                                 <?php } ?></td>
                                
                                                 <?php endif; ?>
@@ -702,9 +715,7 @@ if(!isset($struct)) $struct = [];
                                              <td><?php echo  !empty($employee['start_date_health']) ?$employee['start_date_health'] :'لايوجد' ?></td>
                                              <td><?php echo  !empty($employee['end_date_health']) ?$employee['end_date_health'] :'لايوجد' ?></td>
                                              <td><?php if (!empty($employee['path_health'])){  ?>
-                                                    <a href="<?= $employee['path_health'] ?>" download>
-                                                        <i class="fa fa-download"></i>
-                                                    </a>
+                                                    <?= empInfoFileLink($employee['path_health'] ?? '') ?>
                                                 <?php } ?></td>
                                
                                              <?php endif; ?>
@@ -738,9 +749,7 @@ if(!isset($struct)) $struct = [];
                                             <td><?= $cert['StartDate'] ?></td>
                                             <td>
                                                 <?php if (!empty($cert['FilePath'])){  ?>
-                                                    <a href="<?= $cert['FilePath'] ?>" download>
-                                                        <i class="fa fa-download"></i>
-                                                    </a>
+                                                    <?= empInfoFileLink($cert['FilePath'] ?? '') ?>
                                                 <?php } ?>
                                             </td>
                                             </tr>
@@ -755,6 +764,35 @@ if(!isset($struct)) $struct = [];
                                     </div>
                                 </div>
                                 
+
+                                <!-- مرفقات الموظف -->
+                                <div class="tab-pane fade" id="employee-attachments" role="tabpanel">
+                                    <div class="table-responsive p-0">
+                                        <table class="table table-condensed table-hover" width="100%">
+                                            <thead><tr><th>نوع الملف</th><th>الإجراء</th></tr></thead>
+                                            <tbody>
+                                            <?php
+                                            $employeeAttachments = [
+                                                'الإقامة' => $employee['path_residency'] ?? '',
+                                                'المؤهلات' => $employee['path_qualifications'] ?? '',
+                                                'الخبرة / السيرة الذاتية' => $employee['path_experience'] ?? '',
+                                                'شهادة الخدمة' => $employee['path_service_cert'] ?? '',
+                                                'الصحيفة الجنائية' => $employee['path_police_clearance'] ?? '',
+                                            ];
+                                            $hasEmployeeAttachments = false;
+                                            foreach ($employeeAttachments as $attachmentName => $attachmentPath):
+                                                if (!empty($attachmentPath)): $hasEmployeeAttachments = true; ?>
+                                                    <tr><td><?= htmlspecialchars($attachmentName) ?></td><td><?= empInfoFileLink($attachmentPath) ?></td></tr>
+                                                <?php endif;
+                                            endforeach;
+                                            if (!$hasEmployeeAttachments): ?>
+                                                <tr><td colspan="2" class="text-center text-muted">لا توجد مرفقات إضافية لهذا الموظف</td></tr>
+                                            <?php endif; ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
                                 <!-- الخبرات -->
                                 <div class="tab-pane fade" id="experiences" role="tabpanel" aria-labelledby="experiences-tab">
                                     <div class="table-responsive p-0">
@@ -781,9 +819,7 @@ if(!isset($struct)) $struct = [];
                                             <td><?= $exper['EndDate'] ?></td>
                                             <td>
                                                 <?php if (!empty($exper['FilePath'])){  ?>
-                                                    <a href="<?= $exper['FilePath'] ?>" download>
-                                                        <i class="fa fa-download"></i>
-                                                    </a>
+                                                    <?= empInfoFileLink($exper['FilePath'] ?? '') ?>
                                                 <?php } ?>
                                             </td>
                                             </tr>
