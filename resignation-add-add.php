@@ -195,7 +195,7 @@ if(isset($_GET['id'])){
 
                                     <div class="form-group col-md-12">
                                         <label class="col-form-label required" for="Due_date">تاريخ الاستقالة</label>
-                                        <input type="text" name="DueDate" class="form-control input-date"  placeholder="تاريخ الاستقالة" id="Due_date" autocomplete="off" value="<?=(!empty($row['DueDate'])? $row['DueDate'] : '' )?>" required> <!-- Changed name to DueDate -->
+                                        <input type="date" name="DueDate" class="form-control input-date"  placeholder="تاريخ الاستقالة" id="Due_date" autocomplete="off" value="<?=(!empty($row['DueDate'])? $row['DueDate'] : '' )?>" required> <!-- Changed name to DueDate -->
                                         <input type="hidden" name="type" id="type" value="1">
                                     </div>
                                 </div>
