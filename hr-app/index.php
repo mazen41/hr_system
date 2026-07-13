@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 error_reporting(E_ALL);
 ini_set('display_errors', '0');
 ini_set('log_errors', '1');
@@ -668,7 +668,12 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
             if ($empName === '') {
                 $empName = (string) ($r['UserEmail'] ?? ('#' . $r['UserID']));
             }
-            $photo = !empty($r['Photo']) ? '<img src="uploads/photos/' . $r['Photo'] . '" class="img-circle" width="30" height="30"> ' : '<i class="fas fa-user-circle" style="font-size:30px;color:#ccc"></i> ';
+            $photoPath = trim((string) ($r['Photo'] ?? ''));
+            $photoUrl = 'dist/img/avatar-default.png';
+            if ($photoPath !== '') {
+                $photoUrl = preg_match('#^(https?:)?//#', $photoPath) ? $photoPath : ltrim($photoPath, '/');
+            }
+            $photo = '<img src="' . htmlspecialchars($photoUrl, ENT_QUOTES, 'UTF-8') . '" class="img-circle employee-list-photo" width="38" height="38" alt="صورة الموظف" onerror="this.onerror=null;this.src=&quot;dist/img/avatar-default.png&quot;;"> ';
             $status = empty($r['IsDisabled']) ? '<span class="badge badge-success">نشط</span>' : '<span class="badge badge-danger">موقوف</span>';
             $currency = trim((string) ($r['Currency'] ?? ''));
             if ($currency === '' || preg_match('/�|�/', $currency) || strtoupper($currency) === 'SAR') {
@@ -680,7 +685,8 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
             // Generate certificate link - if certificates exist and have files, link to first file, otherwise link to emp-info page
             $certLink = '';
             if ($certCount > 0 && !empty($r['first_cert_path'])) {
-                $certLink = '<a href="' . htmlspecialchars($r['first_cert_path']) . '" target="_blank" class="btn btn-xs btn-outline-secondary mt-1">عرض الملف</a>';
+                $certPath = preg_match('#^(https?:)?//#', $r['first_cert_path']) ? $r['first_cert_path'] : ltrim($r['first_cert_path'], '/');
+                $certLink = '<a href="' . htmlspecialchars($certPath, ENT_QUOTES, 'UTF-8') . '" target="_blank" rel="noopener" class="btn btn-xs btn-outline-secondary mt-1">عرض الملف</a>';
             } else {
                 $certLink = '<button type="button" class="btn btn-xs btn-outline-warning mt-1" disabled>لا يوجد ملف</button>';
             }
@@ -3186,6 +3192,52 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
     // ============================================================
 // ISSUING SALARIES LIST â€” DataTables
 // ============================================================
+
+    case 'contractRenewal-emp-list':
+        $draw = (int) ($_POST['draw'] ?? 1);
+        $start = (int) ($_POST['start'] ?? 0);
+        $length = (int) ($_POST['length'] ?? 10);
+        $name = trim((string) ($_POST['name'] ?? ''));
+        $branchs = $_POST['branchs'] ?? [];
+        $section = $_POST['section'] ?? [];
+        $jobtitle = $_POST['jobtitle'] ?? [];
+        $grade = $_POST['grade'] ?? [];
+        $type = $_POST['type'] ?? 'contract';
+        $where = "WHERE u.isemp IS NOT NULL AND (u.IsDisabled IS NULL OR u.IsDisabled = 0)";
+        $params = [];
+        if ($name !== '') { $where .= " AND (u.FirstName LIKE ? OR u.LastName LIKE ? OR CONCAT(u.FirstName,' ',u.LastName) LIKE ? OR u.UserID = ?)"; $params = array_merge($params, ["%$name%", "%$name%", "%$name%", (int)$name]); }
+        foreach ([['k.BranchID',$branchs], ['k.SectionID',$section], ['k.jobtitleID',$jobtitle], ['k.GradeID',$grade]] as $filter) {
+            [$col, $vals] = $filter; $vals = is_array($vals) ? array_values(array_filter(array_map('intval', $vals))) : [];
+            if ($vals) { $where .= " AND $col IN (" . implode(',', array_fill(0, count($vals), '?')) . ")"; $params = array_merge($params, $vals); }
+        }
+        $countStmt = $connect_pdo->prepare("SELECT COUNT(*) FROM tblusers u LEFT JOIN tblremewal k ON u.lastversion = k.Id $where");
+        $countStmt->execute($params); $total = (int)$countStmt->fetchColumn();
+        $sql = "SELECT u.UserID,u.FirstName,u.LastName,k.Id AS renewal_id,k.Salary,k.Currency,k.new_e_date,b.branch_name,s.Name AS section_name
+                FROM tblusers u LEFT JOIN tblremewal k ON u.lastversion = k.Id
+                LEFT JOIN branches b ON b.branch_id=k.BranchID LEFT JOIN tblsection s ON s.Id=k.SectionID
+                $where ORDER BY u.UserID DESC LIMIT $start,$length";
+        $stmt = $connect_pdo->prepare($sql); $stmt->execute($params); $data=[];
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $empName = trim(($row['FirstName'] ?? '').' '.($row['LastName'] ?? ''));
+            $expired = !empty($row['new_e_date']) && strtotime($row['new_e_date']) < strtotime(date('Y-m-d'));
+            $confirm = (!$expired && $type === 'contract') ? ' onclick="return confirm(\'This employee\\\'s current contract has not expired yet. Do you still want to renew it?\');"' : '';
+            $url = 'contractRenewal-add?add=' . (int)($row['renewal_id'] ?: 0);
+            $data[] = [$empName . '<br><small class="text-muted">#'.(int)$row['UserID'].'</small>', $row['section_name'] ?: '-', number_format((float)($row['Salary'] ?? 0),2).' '.(($row['Currency'] ?? 'SAR') === 'SAR' ? 'ر.س' : $row['Currency']), $row['branch_name'] ?: '-', ($type === 'contract' ? 'تجديد عقد' : 'ترقية'), '<a class="btn btn-sm btn-primary" href="'.$url.'"'.$confirm.'><i class="fas fa-sync-alt"></i> اختيار</a>'];
+        }
+        echo json_encode(['draw'=>$draw,'recordsTotal'=>$total,'recordsFiltered'=>$total,'data'=>$data], JSON_UNESCAPED_UNICODE); exit;
+
+    case 'Issuing-salaries':
+        $draw = (int)($_POST['draw'] ?? 1); $start=(int)($_POST['start']??0); $length=(int)($_POST['length']??200);
+        $dateRange = trim((string)($_POST['date_range'] ?? '')); $branchs = $_POST['branchs'] ?? [];
+        $where = "WHERE u.isemp IS NOT NULL AND (u.IsDisabled IS NULL OR u.IsDisabled = 0)"; $params=[];
+        $branchVals = is_array($branchs) ? array_values(array_filter(array_map('intval',$branchs))) : [];
+        if ($branchVals) { $where .= " AND k.BranchID IN (".implode(',',array_fill(0,count($branchVals),'?')).")"; $params=array_merge($params,$branchVals); }
+        $countStmt=$connect_pdo->prepare("SELECT COUNT(*) FROM tblusers u LEFT JOIN tblremewal k ON u.lastversion=k.Id $where"); $countStmt->execute($params); $total=(int)$countStmt->fetchColumn();
+        $sql="SELECT u.UserID,CONCAT(u.FirstName,' ',u.LastName) emp_name,b.branch_name,k.Salary,k.Currency FROM tblusers u LEFT JOIN tblremewal k ON u.lastversion=k.Id LEFT JOIN branches b ON b.branch_id=k.BranchID $where ORDER BY u.UserID DESC LIMIT $start,$length";
+        $stmt=$connect_pdo->prepare($sql); $stmt->execute($params); $data=[]; $sum=0;
+        foreach($stmt->fetchAll(PDO::FETCH_ASSOC) as $row){ $salary=(float)($row['Salary']??0); $sum+=$salary; $data[]=[(int)$row['UserID'],$row['emp_name']?:'-',$row['branch_name']?:'-',number_format($salary,2),'0.00','0.00','0.00','0.00','0.00','0.00','0','0','0',number_format($salary,2)]; }
+        echo json_encode(['draw'=>$draw,'recordsTotal'=>$total,'recordsFiltered'=>$total,'data'=>$data,'sum_salary'=>number_format($sum,2,'.',''),'net_salary'=>number_format($sum,2,'.',''),'sum_incentive'=>'0.00','sum_benefit'=>'0.00','sum_advance'=>'0.00','sum_dection'=>'0.00','currency'=>'SAR','results_note'=>['name'=>'','report_time'=>date('Y-m-d H:i'),'selected_period'=>$dateRange,'filter_note'=>'','selected_branch'=>$branchVals]], JSON_UNESCAPED_UNICODE); exit;
+
     case 'Issuing-salaries-list':
         $draw = (int) ($_POST['draw'] ?? 1);
         $dateRange = $_POST['date_range'] ?? '';

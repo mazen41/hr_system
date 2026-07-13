@@ -64,6 +64,13 @@ if($st->rowCount() > 0){
     .popover { text-align: right; }
     
     /* الطباعة */
+    .salary-date-range { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
+    .salary-date-range .date-input-wrap { flex: 1 1 145px; min-width: 145px; direction: ltr; }
+    .salary-date-range .input-group-text { background: #f8f9fc; color: #4e73df; border-color: #d9e2f3; }
+    .salary-date-range input[type="date"] { min-height: 42px; border-color: #d9e2f3; border-radius: .35rem 0 0 .35rem; text-align: right; }
+    .date-separator { color: #6c757d; font-weight: 700; white-space: nowrap; }
+    @media (max-width: 576px) { .salary-date-range { display:block; } .date-separator { display:block; text-align:center; margin:.4rem 0; } }
+
     @media print { 
         .table { width: 100% !important; }
         .table th { background-color: #f5f5f5 !important; -webkit-print-color-adjust: exact; } 
@@ -110,11 +117,17 @@ if($st->rowCount() > 0){
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label class="control-label font-weight-bold" for="date_range">الفترة (من - إلى)</label>
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                                <div class="salary-date-range" dir="rtl">
+                                    <div class="input-group date-input-wrap">
+                                        <div class="input-group-prepend"><span class="input-group-text"><i class="far fa-calendar-alt"></i></span></div>
+                                        <input type="date" class="form-control" id="date_from" aria-label="تاريخ البداية">
                                     </div>
-                                    <input type="text" name="date_range" class="form-control input-date-range" placeholder="من - الى" id="date_range" autocomplete="off" value="">
+                                    <span class="date-separator">إلى</span>
+                                    <div class="input-group date-input-wrap">
+                                        <div class="input-group-prepend"><span class="input-group-text"><i class="far fa-calendar-check"></i></span></div>
+                                        <input type="date" class="form-control" id="date_to" aria-label="تاريخ النهاية">
+                                    </div>
+                                    <input type="hidden" name="date_range" id="date_range" value="">
                                 </div>
                             </div>
                         </div>
@@ -430,7 +443,10 @@ $(document).ready(function(){
     }
     
     function apply_filters(){
-        var date_range = $('#date_range').val();
+        var from = $('#date_from').val();
+        var to = $('#date_to').val();
+        var date_range = (from && to) ? from + ' - ' + to : '';
+        $('#date_range').val(date_range);
         var branchs = get_filter('branchs_list');
 
         if (date_range) {
@@ -448,7 +464,7 @@ $(document).ready(function(){
                         if (isFirstDay && isLastDay) {
                             $('.overlay').show();
                             $('#result-containr').hide();
-                            $('#entries_tb').DataTable().destroy();
+                            if ($.fn.DataTable.isDataTable('#entries_tb')) { $('#entries_tb').DataTable().destroy(); }
                             entriesData('yes', date_range, branchs);
                         } else {
                             toastr.error('❌ يجب أن تبدأ من أول يوم وتنتهي في آخر يوم من نفس الشهر.');
@@ -540,7 +556,7 @@ $(document).ready(function(){
         if($(this).hasClass('advance_pay_info')){ $('#advance_payment_treasur').val(treasur); }
     });
 
-    $(document).on('change', '#branchs_list, #date_range', function(){ $('#addbutton').html(''); });
+    $(document).on('change', '#branchs_list, #date_from, #date_to', function(){ $('#addbutton').html(''); });
 
     treasurList();
     function treasurList(){

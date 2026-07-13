@@ -336,7 +336,8 @@ $('#for_what').change(function() {
                 },
 				dataType:"json",
 				beforeSend:function(){
-					$('#preloading').show();
+                    $('#preloading').show();
+                    $('#employer').empty().append('<option disabled>جاري التحميل...</option>').selectpicker('refresh');
 					}, 
           success: function(response) {
             if(response.result)
@@ -355,13 +356,15 @@ $('#for_what').change(function() {
 
 	function populateSelect(selectId, items) {
     var select = $(selectId);
-    select.empty(); 
-    if (items && items.length > 0) {		
+    select.empty();
+    if (items && items.length > 0) {
         $.each(items, function(index, item) {
             select.append('<option value="' + item.data.id + '">' + item.data.name + '</option>');
         });
-    } 
-	select.selectpicker('refresh'); // تحديث SelectPicker
+    } else {
+        select.append('<option disabled>لا توجد بيانات متاحة</option>');
+    }
+    select.selectpicker('refresh'); // تحديث SelectPicker
 }
 function get_filter(input_name)
 {
