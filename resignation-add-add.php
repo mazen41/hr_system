@@ -293,14 +293,11 @@ $(document).ready(function(){
 
         if($(this).valid()){
             $.ajax({
-                // *** CHANGED URL HERE ***
-                url:"resignation-add.php", // Direct path to the correct backend file
+                url:"hr-app/index.php?action=resignation-add-add",
                 method:"POST",
                 data:form_data,
                 dataType:"json",
                 beforeSend:function(){
-                    // Reuse the shared preloading overlay from the header instead of
-                    // creating a duplicate #preloading element (duplicate IDs broke hide/remove)
                     $('#preloading').show();
                 },
                 success:function(data){
@@ -313,10 +310,6 @@ $(document).ready(function(){
                         toastr.error(data.msg);
                     }
                     $('#preloading').hide();
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    $('#preloading').hide();
-                    toastr.error('حدث خطأ أثناء الاتصال بالخادم: ' + textStatus);
                 }
             });
         }
