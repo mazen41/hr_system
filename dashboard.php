@@ -5,14 +5,18 @@ $page_title = 'مؤشرات';
  $currency = $User->currency;
 ?>
 <style>
-.progress{
-    /* height: 3px !important; */
+/* Modern dashboard styles using design system */
+.dashboard-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-6);
+    margin-bottom: var(--space-6);
 }
-.progress-description{
-    font-size: 14px;
-}
-.fa-donate{
-    color: white;
+
+@media (min-width: 768px) {
+    .dashboard-stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
 }
 </style>
  <!--<link rel="stylesheet" href="plugins/jqcloud2/jqcloud.css">-->

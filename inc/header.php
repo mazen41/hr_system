@@ -146,6 +146,15 @@ $loadSharedChartJs = in_array($currentPage, ['dashboard', 'dashboard-emp', 'empl
     <?php endif; ?>
 
     <!-- Local CSS (versioned, deferred) -->
+    <link rel="stylesheet" href="dist/css/design-system-v2.css?v=7.0" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="dist/css/header-enhanced.css?v=7.0" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="dist/css/sidebar-enhanced.css?v=7.0" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="dist/css/tables-enhanced.css?v=7.0" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="dist/css/dashboard-enhanced.css?v=7.0" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="dist/css/modals-enhanced.css?v=7.0" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="dist/css/alerts-enhanced.css?v=7.0" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="dist/css/loading-states.css?v=7.0" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="dist/css/states-enhanced.css?v=7.0" media="print" onload="this.media='all'">
     <link rel="stylesheet" href="dist/css/utilities.css?v=6.1" media="print" onload="this.media='all'">
     <link rel="stylesheet" href="dist/css/brand.css?v=6.1" media="print" onload="this.media='all'">
     <link rel="stylesheet" href="dist/css/rtl-fixes.css?v=6.1" media="print" onload="this.media='all'">
