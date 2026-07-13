@@ -5688,7 +5688,7 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
                 $msg = 'تم تحديث طلب الاستقالة بنجاح';
             } else {
                 $stmt = $connect_pdo->prepare("INSERT INTO tblresignation 
-                (UserID, BranchID, DueDate, Reason, type, Draft, Status, CreatedBy, CreatedDate)
+                (UserID, BranchID, DueDate, Reason, type, Draft, Status, created_by, CreatedDate)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURDATE())");
                 $stmt->execute([$empId, $branchId, $dueDate, $reason, $resignType, $isDraft, ($isDraft ? null : 0), $userId]);
                 $newId = $connect_pdo->lastInsertId();
