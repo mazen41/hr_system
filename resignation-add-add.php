@@ -10,10 +10,12 @@ $page_title = 'اعدادات الموظفين';
 
 include_once('inc/header.php'); // Ensure this path is correct
 $allowed_branches = $User->allBranches($User->branches);
+$branch_ids = array_keys($allowed_branches);
+$allowed_branch = implode(',', $branch_ids);
 //
 $query = "SELECT UserID ,CONCAT(FirstName, ' ', LastName) as emp_name
 FROM  tblusers
-WHERE  isemp IS NOT NULL"; // Changed isemp is not null to IS NOT NULL for better SQL practice
+WHERE  isemp IS NOT NULL AND BranchID in ($allowed_branch)";
 
 $st = $connect_pdo->prepare($query);
 $st->execute(
