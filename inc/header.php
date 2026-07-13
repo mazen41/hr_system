@@ -58,6 +58,10 @@ $uiLang = ($uiDir === 'rtl') ? 'ar' : 'en';
 $currentPage = $page ?? basename($_SERVER['SCRIPT_NAME'], '.php');
 $siteUrl = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'hr.gt-academy.com');
 $canonicalUrl = $siteUrl . strtok($_SERVER['REQUEST_URI'] ?? ('/' . $currentPage), '?');
+
+// Send CSP headers for security
+require_once __DIR__ . '/../shared/Security.php';
+Security::sendCspHeaders();
 $metaTitle = trim((!empty($page_title) ? $page_title . ' - ' : '') . 'Vision HR');
 $metaDescription = !empty($screen)
     ? trim(strip_tags((string) $screen)) . ' - Vision HR'
