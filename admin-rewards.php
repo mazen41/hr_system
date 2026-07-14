@@ -10,7 +10,7 @@ include_once('inc/header.php');
 require_once 'classes/EvaluationManager.php';
 $evalManager = new EvaluationManager($connect_pdo);
 
-$pendingRewards = $evalManager->getPendingRewards();
+$allRewards = $evalManager->getPendingRewards();
 $stats = $evalManager->getRewardStats();
 
 // Get employees for dropdown
@@ -102,6 +102,17 @@ $employees = $stmt->fetchAll(PDO::FETCH_ASSOC);
 .type-gift { background: #fce7f3; color: #9d174d; }
 .type-time_off { background: #e0e7ff; color: #3730a3; }
 
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+.status-pending { background: #fef3c7; color: #92400e; }
+.status-approved { background: #d1fae5; color: #065f46; }
+.status-delivered { background: #dbeafe; color: #1e40af; }
+
 .employee-info {
     display: flex;
     align-items: center;
@@ -186,27 +197,35 @@ $employees = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
             </div>
             
-            <!-- Pending Rewards -->
+            <!-- All Rewards -->
             <div class="card">
                 <div class="card-header">
-                    <h5 class="mb-0"><i class="fas fa-clock ml-2"></i> مكافآت بانتظار الاعتماد</h5>
+                    <h5 class="mb-0"><i class="fas fa-gift ml-2"></i> جميع المكافآت</h5>
                 </div>
                 <div class="card-body">
-                    <?php if (empty($pendingRewards)): ?>
+                    <?php if (empty($allRewards)): ?>
                     <div class="text-center py-4 text-muted">
                         <i class="fas fa-check-circle fa-3x mb-3" style="color:#d1d5db;"></i>
-                        <p>لا توجد مكافآت معلقة</p>
+                        <p>لا توجد مكافآت</p>
                     </div>
                     <?php else: ?>
                     <div class="row">
-                        <?php foreach ($pendingRewards as $reward): ?>
+                        <?php foreach ($allRewards as $reward): ?>
                         <div class="col-lg-6 col-xl-4">
                             <div class="reward-card" data-id="<?= $reward['id'] ?>">
                                 <div class="d-flex justify-content-between align-items-start mb-2">
                                     <h6 class="mb-0"><?= htmlspecialchars($reward['title_ar']) ?></h6>
-                                    <span class="reward-type-badge type-<?= $reward['reward_type'] ?>">
-                                        <?= $reward['reward_type'] ?>
-                                    </span>
+                                    <div class="d-flex gap-1">
+                                        <span class="reward-type-badge type-<?= $reward['reward_type'] ?>">
+                                            <?= $reward['reward_type'] ?>
+                                        </span>
+                                        <span class="status-badge status-<?= $reward['status'] ?>">
+                                            <?php
+                                            $statusLabels = ['pending' => 'بانتظار الاعتماد', 'approved' => 'معتمدة', 'delivered' => 'تم التسليم'];
+                                            echo $statusLabels[$reward['status']] ?? $reward['status'];
+                                            ?>
+                                        </span>
+                                    </div>
                                 </div>
                                 
                                 <div class="employee-info">
@@ -229,9 +248,15 @@ $employees = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <?php endif; ?>
                                 
                                 <div class="d-flex gap-2">
+                                    <?php if ($reward['status'] === 'pending'): ?>
                                     <button class="btn btn-success btn-sm flex-fill" onclick="approveReward(<?= $reward['id'] ?>)">
                                         <i class="fas fa-check"></i> اعتماد
                                     </button>
+                                    <?php elseif ($reward['status'] === 'approved'): ?>
+                                    <button class="btn btn-primary btn-sm flex-fill" onclick="deliverReward(<?= $reward['id'] ?>)">
+                                        <i class="fas fa-hand-holding"></i> تسليم
+                                    </button>
+                                    <?php endif; ?>
                                     <button class="btn btn-outline-secondary btn-sm" onclick="viewReward(<?= $reward['id'] ?>)">
                                         <i class="fas fa-eye"></i>
                                     </button>
@@ -410,9 +435,7 @@ $(document).ready(function() {
                     }
                     if (res.result) {
                         toastr.success(res.msg || 'تم الاعتماد بنجاح.');
-                        $('[data-id="' + id + '"]').fadeOut(300, function() {
-                            $(this).remove();
-                        });
+                        setTimeout(function(){ location.reload(); }, 1000);
                     } else {
                         toastr.error(res.msg || 'فشل الاعتماد.');
                         console.error("Server Error (Approve): ", res.msg, res.data, res.debug_session);
@@ -420,6 +443,43 @@ $(document).ready(function() {
                 }).fail(function(jqXHR, textStatus, errorThrown) {
                     toastr.error('فشل في الاتصال بالخادم: ' + textStatus);
                     console.error("AJAX Fail (Approve): ", textStatus, errorThrown, jqXHR.responseText);
+                });
+            }
+        });
+    };
+
+    // Deliver Reward function
+    window.deliverReward = function(id) {
+        Swal.fire({
+            title: 'تسليم المكافأة',
+            text: 'هل تريد تسليم هذه المكافأة؟',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'نعم، تسليم',
+            cancelButtonText: 'إلغاء',
+            confirmButtonColor: '#3b82f6'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                console.log("Delivering reward ID: " + id);
+                $.post('hr-app/index.php?action=deliver-reward', { reward_id: id }, function(res) {
+                    console.log("Deliver AJAX response: ", res);
+                    if(typeof res === 'string') {
+                        try { res = JSON.parse(res); } catch(e) {
+                            toastr.error('خطأ في تحليل استجابة الخادم.');
+                            console.error("JSON Parse Error: ", e, "Response: ", res);
+                            return;
+                        }
+                    }
+                    if (res.result) {
+                        toastr.success(res.msg || 'تم التسليم بنجاح.');
+                        setTimeout(function(){ location.reload(); }, 1000);
+                    } else {
+                        toastr.error(res.msg || 'فشل التسليم.');
+                        console.error("Server Error (Deliver): ", res.msg, res.data, res.debug_session);
+                    }
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    toastr.error('فشل في الاتصال بالخادم: ' + textStatus);
+                    console.error("AJAX Fail (Deliver): ", textStatus, errorThrown, jqXHR.responseText);
                 });
             }
         });

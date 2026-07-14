@@ -463,26 +463,38 @@ class OrgChartManager {
      * Sync org structure from existing sections
      */
     public function syncFromSections() {
-        // Get all sections not yet in org_structure
+        // Get all sections not yet in org_structure (ensure uniqueness)
         $stmt = $this->pdo->query("
-            SELECT s.* FROM tblsection s
+            SELECT DISTINCT s.* FROM tblsection s
             LEFT JOIN org_structure os ON os.section_id = s.Id
             WHERE os.id IS NULL
+            ORDER BY s.Name
         ");
         $sections = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         $created = 0;
+        $syncedSections = [];
+        
         foreach ($sections as $section) {
-            $this->createNode([
-                'node_type' => 'department',
-                'name_ar' => $section['Name'],
-                'name_en' => $section['Name_en'] ?? null,
-                'section_id' => $section['Id']
-            ]);
-            $created++;
+            // Double-check section doesn't exist before creating
+            $checkStmt = $this->pdo->prepare("SELECT COUNT(*) FROM org_structure WHERE section_id = ?");
+            $checkStmt->execute([$section['Id']]);
+            
+            if ($checkStmt->fetchColumn() == 0) {
+                $nodeId = $this->createNode([
+                    'node_type' => 'department',
+                    'name_ar' => $section['Name'],
+                    'name_en' => $section['Name_en'] ?? null,
+                    'section_id' => $section['Id']
+                ]);
+                if ($nodeId) {
+                    $created++;
+                    $syncedSections[] = $section['Name'];
+                }
+            }
         }
         
-        return $created;
+        return ['created' => $created, 'sections' => $syncedSections];
     }
     
     /**

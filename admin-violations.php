@@ -441,7 +441,9 @@ $employees = $connect_pdo->query("
                             <option value="<?= $vt['id'] ?>" 
                                     data-severity="<?= $vt['severity'] ?>"
                                     data-penalty="<?= $vt['default_penalty_type'] ?>"
-                                    data-blocks="<?= $vt['blocks_promotion'] ?>">
+                                    data-penalty-value="<?= $vt['default_penalty_value'] ?? '' ?>"
+                                    data-blocks="<?= $vt['blocks_promotion'] ?>"
+                                    data-block-months="<?= $vt['promotion_block_months'] ?? '' ?>">
                                 <?= htmlspecialchars($vt['name_ar']) ?> (<?= $severityLabels[$vt['severity']] ?? $vt['severity'] ?>)
                             </option>
                             <?php endforeach; ?>
@@ -690,13 +692,22 @@ function showTypeInfo(select) {
     
     var severity = opt.data('severity');
     var penalty = opt.data('penalty');
+    var penaltyValue = opt.data('penalty-value');
     var blocks = opt.data('blocks');
+    var blockMonths = opt.data('block-months');
     
     var html = '<div class="alert alert-info mb-0 py-2">';
     html += '<small>';
     html += '<strong>العقوبة الافتراضية:</strong> ' + getPenaltyLabel(penalty);
+    if (penaltyValue) {
+        html += ' (' + penaltyValue + ')';
+    }
     if (blocks) {
-        html += ' | <span class="text-danger"><i class="fas fa-ban"></i> يمنع الترقية</span>';
+        html += ' | <span class="text-danger"><i class="fas fa-ban"></i> يمنع الترقية';
+        if (blockMonths) {
+            html += ' (' + blockMonths + ' شهر)';
+        }
+        html += '</span>';
     }
     html += '</small></div>';
     

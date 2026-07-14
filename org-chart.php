@@ -684,7 +684,11 @@ window.syncSections = function() {
     if(confirm('سيتم استيراد الأقسام من النظام وإضافتها كأقسام رئيسية. هل أنت متأكد؟')) {
         $.post('hr-app/index.php?action=sync-org-from-sections', function(res) {
             if(res.result !== false) { // Logic matches the backend response format
-                toastr.success(res.msg);
+                var message = res.msg;
+                if (res.data && res.data.sections && res.data.sections.length > 0) {
+                    message += '\nالأقسام المضافة: ' + res.data.sections.join(', ');
+                }
+                toastr.success(message);
                 setTimeout(() => location.reload(), 1000);
             } else {
                 toastr.error(res.msg || 'حدث خطأ أثناء المزامنة');

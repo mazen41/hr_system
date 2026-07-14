@@ -553,8 +553,8 @@ class EvaluationManager {
                 FROM rewards r
                 JOIN tblusers e ON e.UserID = r.employee_id
                 JOIN tblusers ab ON ab.UserID = r.awarded_by
-                WHERE r.status = 'pending'
                 ORDER BY r.created_at DESC
+                LIMIT 50
             ");
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {

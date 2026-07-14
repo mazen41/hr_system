@@ -321,6 +321,7 @@ $(document).ready(function() {
                     try { res = JSON.parse(res); } catch(e) {
                         toastr.error('خطأ في تحليل استجابة الخادم.');
                         console.error("JSON Parse Error: ", e, "Response: ", res);
+                        $('#rangeModal').modal('hide'); // Hide modal on error
                         return;
                     }
                 }
@@ -330,11 +331,20 @@ $(document).ready(function() {
                     $('#rangeModal').modal('hide');
                     setTimeout(function(){ location.reload(); }, 1000);
                 } else {
-                    toastr.error(res.msg || 'حدث خطأ أثناء الحفظ.');
+                    // Hide modal first so error is visible
+                    $('#rangeModal').modal('hide');
+                    // Show error with delay to ensure modal is hidden
+                    setTimeout(function() {
+                        toastr.error(res.msg || 'حدث خطأ أثناء الحفظ.');
+                    }, 300);
                     console.error("Server Error: ", res.msg, res.data, res.debug_session); // Log full response for debugging
                 }
             }).fail(function(jqXHR, textStatus, errorThrown) {
-                toastr.error('فشل في الاتصال بالخادم: ' + textStatus);
+                // Hide modal first so error is visible
+                $('#rangeModal').modal('hide');
+                setTimeout(function() {
+                    toastr.error('فشل في الاتصال بالخادم: ' + textStatus);
+                }, 300);
                 console.error("AJAX Fail: ", textStatus, errorThrown, jqXHR.responseText); // Log full AJAX error
             });
         });

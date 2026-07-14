@@ -41,6 +41,37 @@ include_once('inc/header.php');
         margin-top: .75rem;
         border-radius: 10px;
     }
+
+    /* Fix dropdown z-index and visibility */
+    .btn-group {
+        position: relative;
+        z-index: 100;
+    }
+
+    .dropdown-menu {
+        position: absolute;
+        z-index: 9999 !important;
+        min-width: 160px;
+    }
+
+    .dropdown-item {
+        cursor: pointer;
+        z-index: 9999;
+    }
+
+    .table-responsive {
+        overflow: visible;
+    }
+
+    /* Ensure buttons are clickable */
+    .btn-default {
+        cursor: pointer;
+        pointer-events: auto !important;
+    }
+
+    .close-trash-alt {
+        pointer-events: auto !important;
+    }
 </style>
 <div class="content-header page-nav">
     <div class="container-fluid ">
