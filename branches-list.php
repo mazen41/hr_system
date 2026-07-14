@@ -49,18 +49,25 @@ include_once('inc/header.php');
     }
 
     .dropdown-menu {
-        position: absolute;
+        position: absolute !important;
         z-index: 9999 !important;
         min-width: 160px;
+        transform: none !important;
+        will-change: auto !important;
     }
 
     .dropdown-item {
         cursor: pointer;
         z-index: 9999;
+        position: relative;
+    }
+
+    .dropdown-item:hover {
+        background-color: #f8f9fa;
     }
 
     .table-responsive {
-        overflow: visible;
+        overflow: visible !important;
     }
 
     /* Ensure buttons are clickable */
@@ -71,6 +78,13 @@ include_once('inc/header.php');
 
     .close-trash-alt {
         pointer-events: auto !important;
+    }
+
+    /* Prevent dropdown from flashing */
+    .dropdown-menu.show {
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
     }
 </style>
 <div class="content-header page-nav">
