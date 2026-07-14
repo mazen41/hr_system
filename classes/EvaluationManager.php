@@ -594,27 +594,6 @@ class EvaluationManager {
     
     public function saveSalaryRange($data) {
         try {
-            // Check if table exists, if not create it
-            $this->pdo->exec("
-                CREATE TABLE IF NOT EXISTS department_salary_ranges (
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    section_id INT NOT NULL,
-                    grade_id INT NULL,
-                    job_title_id INT NULL,
-                    min_salary DECIMAL(15,2) NOT NULL,
-                    max_salary DECIMAL(15,2) NOT NULL,
-                    currency VARCHAR(10) DEFAULT 'SAR',
-                    effective_date DATE NOT NULL,
-                    notes TEXT NULL,
-                    created_by INT NULL,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                    FOREIGN KEY (section_id) REFERENCES tblsection(Id) ON DELETE CASCADE,
-                    FOREIGN KEY (grade_id) REFERENCES tbljobgrade(Id) ON DELETE SET NULL,
-                    FOREIGN KEY (job_title_id) REFERENCES tbljobtitle(Id) ON DELETE SET NULL
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci
-            ");
-
             if (isset($data['id']) && $data['id']) {
                 $sql = "
                     UPDATE department_salary_ranges 
@@ -624,13 +603,13 @@ class EvaluationManager {
                 ";
                 $params = [
                     $data['section_id'],
-                    $data['grade_id'] ?? null,
-                    $data['job_title_id'] ?? null,
+                    $data['grade_id'],
+                    $data['job_title_id'],
                     $data['min_salary'],
                     $data['max_salary'],
                     $data['currency'] ?? 'SAR',
                     $data['effective_date'],
-                    $data['notes'] ?? null,
+                    $data['notes'],
                     $data['id']
                 ];
                 error_log("EvaluationManager::saveSalaryRange (UPDATE) SQL: " . $sql);
@@ -643,19 +622,19 @@ class EvaluationManager {
             } else {
                 $sql = "
                     INSERT INTO department_salary_ranges 
-                    (section_id, grade_id, job_title_id, min_salary, max_salary, currency, effective_date, notes, created_by)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    (section_id, grade_id, job_title_id, min_salary, max_salary, currency, effective_date, notes, created_by, created_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
                 ";
                 $params = [
                     $data['section_id'],
-                    $data['grade_id'] ?? null,
-                    $data['job_title_id'] ?? null,
+                    $data['grade_id'],
+                    $data['job_title_id'],
                     $data['min_salary'],
                     $data['max_salary'],
                     $data['currency'] ?? 'SAR',
                     $data['effective_date'],
-                    $data['notes'] ?? null,
-                    $data['created_by'] ?? null
+                    $data['notes'],
+                    $data['created_by']
                 ];
                 error_log("EvaluationManager::saveSalaryRange (INSERT) SQL: " . $sql);
                 error_log("EvaluationManager::saveSalaryRange (INSERT) Params: " . json_encode($params));
@@ -668,33 +647,13 @@ class EvaluationManager {
             }
         } catch (PDOException $e) {
             error_log("EvaluationManager::saveSalaryRange Error: " . $e->getMessage());
+            error_log("EvaluationManager::saveSalaryRange Trace: " . $e->getTraceAsString());
             throw $e;
         }
     }
     
     public function getAllSalaryRanges() {
         try {
-            // Check if table exists, if not create it
-            $this->pdo->exec("
-                CREATE TABLE IF NOT EXISTS department_salary_ranges (
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    section_id INT NOT NULL,
-                    grade_id INT NULL,
-                    job_title_id INT NULL,
-                    min_salary DECIMAL(15,2) NOT NULL,
-                    max_salary DECIMAL(15,2) NOT NULL,
-                    currency VARCHAR(10) DEFAULT 'SAR',
-                    effective_date DATE NOT NULL,
-                    notes TEXT NULL,
-                    created_by INT NULL,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                    FOREIGN KEY (section_id) REFERENCES tblsection(Id) ON DELETE CASCADE,
-                    FOREIGN KEY (grade_id) REFERENCES tbljobgrade(Id) ON DELETE SET NULL,
-                    FOREIGN KEY (job_title_id) REFERENCES tbljobtitle(Id) ON DELETE SET NULL
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci
-            ");
-
             $stmt = $this->pdo->query("
                 SELECT dsr.*, s.Name as section_name, jg.Name as grade_name, jt.Name as job_title_name
                 FROM department_salary_ranges dsr

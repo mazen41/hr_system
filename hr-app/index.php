@@ -10378,21 +10378,32 @@ $msg = 'ØªÙ… Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Øª�
         require_once __DIR__ . '/../classes/EvaluationManager.php';
         $manager = new EvaluationManager($connect_pdo);
 
-        $rangeId = $manager->saveSalaryRange([
-            'id' => $_POST['id'] ?? null,
-            'section_id' => intval($_POST['section_id'] ?? 0),
-            'grade_id' => $_POST['grade_id'] ?? null,
-            'job_title_id' => $_POST['job_title_id'] ?? null,
-            'min_salary' => floatval($_POST['min_salary'] ?? 0),
-            'max_salary' => floatval($_POST['max_salary'] ?? 0),
-            'currency' => $_POST['currency'] ?? 'SAR',
-            'effective_date' => $_POST['effective_date'] ?? date('Y-m-d'),
-            'notes' => $_POST['notes'] ?? null,
-            'created_by' => $_SESSION['user_id']
-        ]);
+        try {
+            // Convert empty strings to null for optional fields
+            $gradeId = !empty($_POST['grade_id']) ? intval($_POST['grade_id']) : null;
+            $jobTitleId = !empty($_POST['job_title_id']) ? intval($_POST['job_title_id']) : null;
+            $notes = !empty($_POST['notes']) ? $_POST['notes'] : null;
 
-        $data = ['id' => $rangeId];
-        $msg = 'تم حفظ نطاق الراتب';
+            $rangeId = $manager->saveSalaryRange([
+                'id' => !empty($_POST['id']) ? intval($_POST['id']) : null,
+                'section_id' => intval($_POST['section_id'] ?? 0),
+                'grade_id' => $gradeId,
+                'job_title_id' => $jobTitleId,
+                'min_salary' => floatval($_POST['min_salary'] ?? 0),
+                'max_salary' => floatval($_POST['max_salary'] ?? 0),
+                'currency' => $_POST['currency'] ?? 'SAR',
+                'effective_date' => $_POST['effective_date'] ?? date('Y-m-d'),
+                'notes' => $notes,
+                'created_by' => $_SESSION['user_id']
+            ]);
+
+            $data = ['id' => $rangeId];
+            $msg = 'تم حفظ نطاق الراتب';
+        } catch (Exception $e) {
+            $result = false;
+            $msg = 'خطأ: ' . $e->getMessage();
+            error_log("save-salary-range error: " . $e->getMessage());
+        }
         break;
 
     // ============================================================
