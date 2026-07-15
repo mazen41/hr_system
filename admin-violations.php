@@ -390,6 +390,11 @@ $employees = $connect_pdo->query("
                             <i class="fas fa-archive"></i> إغلاق
                         </button>
                         <?php endif; ?>
+                        <?php if ($User->userIsAdmin() && in_array($v['status'], ['reported', 'under_review'])): ?>
+                        <button class="btn btn-sm btn-outline-warning" onclick="editViolation(<?= $v['id'] ?>)">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <?php endif; ?>
                         <button class="btn btn-sm btn-outline-info" onclick="viewViolation(<?= $v['id'] ?>)">
                             <i class="fas fa-eye"></i>
                         </button>
@@ -420,6 +425,7 @@ $employees = $connect_pdo->query("
             </div>
             <form id="recordForm">
                 <div class="modal-body">
+                    <input type="hidden" name="id" id="violationId">
                     <div class="form-group">
                         <label>الموظف <span class="text-danger">*</span></label>
                         <select name="user_id" class="form-control select2" required>
@@ -493,9 +499,16 @@ $employees = $connect_pdo->query("
                                     <h6 class="mb-1"><?= htmlspecialchars($vt['name_ar']) ?></h6>
                                     <small class="text-muted"><?= htmlspecialchars($vt['name_en'] ?? '') ?></small>
                                 </div>
-                                <span class="severity-badge <?= $vt['severity'] ?>">
-                                    <?= $severityLabels[$vt['severity']] ?? $vt['severity'] ?>
-                                </span>
+                                <div class="d-flex gap-1">
+                                    <span class="severity-badge <?= $vt['severity'] ?>">
+                                        <?= $severityLabels[$vt['severity']] ?? $vt['severity'] ?>
+                                    </span>
+                                    <?php if ($User->userIsAdmin()): ?>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="editViolationType(<?= $vt['id'] ?>)">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <?php endif; ?>
+                                </div>
                             </div>
                             <div class="mt-2 d-flex gap-2 flex-wrap" style="font-size:12px;">
                                 <span class="penalty-tag">
@@ -508,7 +521,7 @@ $employees = $connect_pdo->query("
                                 </span>
                                 <?php endif; ?>
                             </div>
-                            
+
                             <?php
                             $escalations = $violationManager->getEscalationRules($vt['id']);
                             if (!empty($escalations)):
@@ -817,6 +830,46 @@ function viewViolation(id) {
 function getStatusLabel(status) {
     var labels = {reported: 'جديدة', under_review: 'قيد المراجعة', confirmed: 'مؤكدة', appealed: 'مستأنفة', dismissed: 'مرفوضة', closed: 'مغلقة'};
     return labels[status] || status;
+}
+
+// Edit violation type
+function editViolationType(id) {
+    $.get('hr-app/index.php?action=get-violation-type&id=' + id, function(data) {
+        if (data.result && data.data) {
+            var vt = data.data;
+            $('#typeForm input[name="id"]').val(vt.id);
+            $('#typeForm input[name="code"]').val(vt.code);
+            $('#typeForm input[name="name_ar"]').val(vt.name_ar);
+            $('#typeForm input[name="name_en"]').val(vt.name_en || '');
+            $('#typeForm select[name="category"]').val(vt.category);
+            $('#typeForm select[name="severity"]').val(vt.severity);
+            $('#typeForm select[name="default_penalty_type"]').val(vt.default_penalty_type);
+            $('#typeForm input[name="default_penalty_value"]').val(vt.default_penalty_value || '');
+            $('#typeForm input[name="blocks_promotion"]').prop('checked', vt.blocks_promotion == 1);
+            $('#typeForm input[name="promotion_block_months"]').val(vt.promotion_block_months || '');
+            $('#typeForm textarea[name="description_ar"]').val(vt.description_ar || '');
+            $('#typeForm textarea[name="description_en"]').val(vt.description_en || '');
+
+            $('#typesModal').modal('hide');
+            $('#addTypeModal').modal('show');
+        }
+    });
+}
+
+// Edit recorded violation
+function editViolation(id) {
+    $.get('hr-app/index.php?action=get-violation&id=' + id, function(data) {
+        if (data.result && data.data) {
+            var v = data.data;
+            $('#recordForm input[name="id"]').val(v.id);
+            $('#recordForm select[name="user_id"]').val(v.UserID).trigger('change');
+            $('#recordForm select[name="violation_type_id"]').val(v.violation_type_id).trigger('change');
+            $('#recordForm input[name="violation_date"]').val(v.violation_date);
+            $('#recordForm textarea[name="description"]').val(v.description || '');
+
+            $('#recordModal').modal('show');
+        }
+    });
 }
 
 // Save violation type

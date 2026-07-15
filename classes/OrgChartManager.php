@@ -465,9 +465,8 @@ class OrgChartManager {
     public function syncFromSections() {
         // Get all sections not yet in org_structure (ensure uniqueness)
         $stmt = $this->pdo->query("
-            SELECT DISTINCT s.* FROM tblsection s
-            LEFT JOIN org_structure os ON os.section_id = s.Id
-            WHERE os.id IS NULL
+            SELECT s.* FROM tblsection s
+            WHERE s.Id NOT IN (SELECT DISTINCT section_id FROM org_structure WHERE section_id IS NOT NULL)
             ORDER BY s.Name
         ");
         $sections = $stmt->fetchAll(PDO::FETCH_ASSOC);

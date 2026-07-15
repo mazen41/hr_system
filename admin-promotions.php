@@ -680,6 +680,11 @@ $jobTitles = $connect_pdo->query("SELECT * FROM tbljobtitle ORDER BY Name")->fet
                         <i class="fas fa-times"></i> رفض
                     </button>
                     <?php endif; ?>
+                    <?php if ($User->userIsAdmin() && in_array(($r['status'] ?? ''), ['pending'])): ?>
+                    <button type="button" class="btn btn-sm btn-outline-warning" onclick="editPromotion(<?= $r['id'] ?>)">
+                        <i class="fas fa-edit"></i> تعديل
+                    </button>
+                    <?php endif; ?>
                     <button type="button" class="btn btn-sm btn-outline-info" onclick="viewRequest(<?= $r['id'] ?>)">
                         <i class="fas fa-eye"></i> التفاصيل
                     </button>
@@ -703,6 +708,7 @@ $jobTitles = $connect_pdo->query("SELECT * FROM tbljobtitle ORDER BY Name")->fet
             </div>
             <form id="requestForm" onsubmit="event.preventDefault();">
                 <div class="modal-body">
+                    <input type="hidden" name="id" id="promotionId">
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
@@ -710,7 +716,7 @@ $jobTitles = $connect_pdo->query("SELECT * FROM tbljobtitle ORDER BY Name")->fet
                                 <select name="user_id" id="empSelect" class="form-control select2-modal-request" required onchange="checkEligibility()">
                                     <option value="">-- اختر الموظف --</option>
                                     <?php foreach ($employees as $emp): ?>
-                                    <option value="<?= $emp['UserID'] ?>" 
+                                    <option value="<?= $emp['UserID'] ?>"
                                             data-grade-id="<?= htmlspecialchars($emp['current_grade_id'] ?? '') ?>"
                                             data-grade-name="<?= htmlspecialchars($emp['grade_name'] ?? '') ?>"
                                             data-jobtitle-id="<?= htmlspecialchars($emp['current_jobtitle_id'] ?? '') ?>"
